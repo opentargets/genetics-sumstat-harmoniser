@@ -1,4 +1,5 @@
-# Sumstat harmoniser
+GWAS summary statistics harmoniser
+==================================
 
 Work in progress.
 

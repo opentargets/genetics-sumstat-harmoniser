@@ -13,25 +13,47 @@
 Load summary stat record (ssrec).
 
 Get record from reference VCF (vcfrec) using ssrec chrom:pos and tabix.
-  - If no record -> discard (error code: ??)
-  - Assert that only 1 record was returned (should be the case for gnomad vcfs at least)
-  - Discard alt alleles if allele freq is below af_vcf_min threshold
+  If no record -> discard (code: ??) and break
+  Assert that only 1 record was returned (should be the case for gnomad vcfs at least)
+  Discard alt alleles if allele freq is below af_vcf_min threshold
 
-As vcfrec could be multialleleic, compare ssrec alleles to vcfrec alleles. Search for ssrec allele match with each vcfrec ref-alt allele pair.
-  - If no matches -> discard ssrec as ambiguous (error code: ??)
-  - If >1 match -> discard ssrec as ambiguous (error code: ??)
-  - If 1 match -> proceed
+As vcfrec could be multialleleic, compare ssrec alleles to vcfrec alleles.
+Search for ssrec allele match with each vcfrec ref-alt allele pair and their reverse complements.
+Remove alt allele and corresponding INFO entries if not a match.
+  If no matches -> discard ssrec as ambiguous (code: ??) and break
+  If >1 match -> discard ssrec as ambiguous (code: ??) and break
+  If 1 match -> proceed
 
 Check whether ssrec alleles and vcfrec alleles are palindromic
-  - If palindromic and infer_palin==True:
-    - If MAF of either ssrec or vcfrec alleles is > maf_palin_infer_threshold -> discard (error code: ??)
-    - If ssrec EAF >
+  If palindromic
+    If infer_palin==True and infer_strand==True:
+      If MAF of either ssrec or vcfrec alleles is > maf_palin_infer_threshold -> discard (error code: ??)
+      If ssrec and vcfrec EAFs are not concordant (one is >0.5 and other <0.5)
+        Flip beta (code: ??) and break
+      Else:
+        Don't flip beta (code: ??) and break
+    Else: -> discard (code: ??) and break
 
+Check whether on the opposite strand: ssrec alleles == reverse_complement(vcfrec alleles)
+  If opposite strand
+    If infer_strand==True
+      If ssrec effect_al == reverse_complement(vcfrec effect_al):
+        Don't flip beta (code: ??) and break
+      Else:
+        Flip beta (code: ??) and break
+    Else:
+      Assuming forward strand therefore alleles are ambiguous -> discard (code: ??) and break
 
-Opposite strand
-Same strand
-Else error
+Check that alleles are on the same strand (they should be by now).
+  If same stand:
+    If ssrec effect_al == vcfrec effect_al:
+      Don't flip beta (code: ??) and break
+    Else:
+      Flip beta (code: ??) and break
 
+Else error (shouldn't ever get here):
+  Raise error
+  
 """
 
 import sys
@@ -59,7 +81,7 @@ def main():
     return 0
 
 class VCF_record:
-    """ Parses info from a single vcf row
+    """ Holds info from a single vcf row
     """
     def __init__(self, row):
         # Parse fields
@@ -94,7 +116,7 @@ def get_vcf_record(in_vcf, chrom, pos):
         chrom (str): chromosome
         pos (int): base pair position
     Returns:
-        ??
+        VCF_record
     """
     response = list(tabix_query(in_vcf, chrom, pos, pos))
     # The gnomad vcf should have 1 line per position
@@ -213,10 +235,10 @@ class Args_placeholder:
     def __init__(self):
         # File args
         self.name = "testdata"
-        self.in_sum_stats = "../test_data/sum_stats.testdata.tsv"
-        self.in_reference_vcf_pattern = "../test_data/reference_chr#_vcf.testdata.vcf.gz"
-        self.out_harmonised = "../output/output.testdata.tsv"
-        self.out_log_prefix = "../logs/testdata"
+        self.in_sum_stats = "test_data/sum_stats.testdata.tsv"
+        self.in_reference_vcf_pattern = "test_data/reference_chr#_vcf.testdata.vcf.gz"
+        self.out_harmonised = "output/output.testdata.tsv"
+        self.out_log_prefix = "logs/testdata"
         # Column args
         self.ss_rsid_col = "rsID"
         self.ss_chrom_col = "chrom"
