@@ -16,6 +16,7 @@ Get record from reference VCF (vcfrec) using ssrec chrom:pos and tabix.
   If no record -> discard (code: ??) and break
   Assert that only 1 record was returned (should be the case for gnomad vcfs at least)
   Discard alt alleles if allele freq is below af_vcf_min threshold
+  If no alt alleles remaining -> discard (code: ??) and break
 
 As vcfrec could be multialleleic, compare ssrec alleles to vcfrec alleles.
 Search for ssrec allele match with each vcfrec ref-alt allele pair and their reverse complements.
@@ -53,7 +54,7 @@ Check that alleles are on the same strand (they should be by now).
 
 Else error (shouldn't ever get here):
   Raise error
-  
+
 """
 
 import sys
@@ -70,17 +71,54 @@ def main():
 
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.in_sum_stats, args.in_sep):
-        print ss_rec
+
+        print ss_rec # Debug
+
+        #
+        # Load and filter VCF record
+        #
+
         # Get VCF reference variant for this record
         vcf_rec = get_vcf_record(
-            args.in_reference_vcf_pattern.replace("#", ss_rec.chrom),
-            ss_rec.chrom,
-            ss_rec.pos)
-        if vcf_rec:
-            print vcf_rec.info
+                    args.in_reference_vcf_pattern.replace("#", ss_rec.chrom),
+                    ss_rec.chrom,
+                    ss_rec.pos)
+
+        # Discard if there are no records
+        if not vcf_rec:
+            # TODO log that no VCF record was found for this variant
+            continue
+
+        # Remove alt alleles if allele freq < threshold
+        vcf_rec = vcf_rec.filter_alts_by_af(args.af_vcf_min,
+                                            args.af_vcf_field)
+
+        # Discard ssrec if there are no alts after filtering
+        if vcf_rec.n_alts() == 0:
+            # TODO log that no alts remained after filtering
+            continue
+
+        #
+        # Remove non-matching multialleleic sites
+        #
+
+
+
+
     return 0
 
-class VCF_record:
+def find_non_matching_alleles(sumstat_rec, vcf_rec):
+    """ For each vcfrec ref-alt pair check whether it matches either the
+        forward or reverse complement of the sumstat alleles.
+    Args:
+        sumstat_rec (SumStatRecord)
+        vcf_rec (VCFRecord)
+    Returns:
+        list of alt alleles to remove
+    """
+    pass
+
+class VCFRecord:
     """ Holds info from a single vcf row
     """
     def __init__(self, row):
@@ -93,8 +131,57 @@ class VCF_record:
         self.qual = row[5]
         self.filter = str(row[6])
         self.info = parse_info_field(row[7])
-        # Derive vars
-        self.nalts = len(self.alt_als)
+
+    def n_alts(self):
+        """ Returns the number of alt alleles """
+        return len(self.alt_als)
+
+    def remove_alt_al(self, alt_al):
+        """ Given an alt allele, will remove from the record. Will also remove
+            corresponding info fields.
+        """
+        n_alts = len(self.alt_als)
+        alt_al_index = self.alt_als.index(alt_al)
+        # Remove from alt_al list
+        del self.alt_als[alt_al_index]
+        # Remove from info fields if same length
+        for key in self.info:
+            if len(self.info[key]) == n_alts:
+                del self.info[key][alt_al_index]
+        return self
+
+    def filter_alts_by_af(self, maf_threshold, af_field):
+        """ Will remove alt alleles if maf < maf_threshold. Also removes
+            corresponding info field.
+        Args:
+            maf_threshold (float): min threshold to be kept
+            af_field (str): INFO field containing AF
+        Returns:
+            VCF_record
+        """
+        # Find alts to remove
+        alts_to_remove = []
+        for alt_al, af in zip(self.alt_als, self.info[af_field]):
+            maf = af_to_maf(af)
+            if maf < maf_threshold:
+                alts_to_remove.append(alt_al)
+        # Remove alts
+        for alt in alts_to_remove:
+            self = self.remove_alt_al(alt)
+        return self
+
+def af_to_maf(af):
+    """ Converts an allele frequency to a minor allele frequency
+    Args:
+        af (float or str)
+    Returns:
+        float
+    """
+    af = float(af)
+    if af <= 0.5:
+        return af
+    else:
+        return 1 - af
 
 def parse_info_field(field):
     """ Parses a vcf info field in to a dictionary
@@ -119,10 +206,9 @@ def get_vcf_record(in_vcf, chrom, pos):
         VCF_record
     """
     response = list(tabix_query(in_vcf, chrom, pos, pos))
-    # The gnomad vcf should have 1 line per position
-    assert len(response) <= 1
+    assert len(response) <= 1 # The gnomad vcf should have 1 line per position
     if len(response) == 1:
-        vcf_rec = VCF_record(response[0])
+        vcf_rec = VCFRecord(response[0])
         return vcf_rec
     else:
         return None
