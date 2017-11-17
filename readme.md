@@ -14,6 +14,7 @@ Get record from reference VCF (vcfrec) using ssrec chrom:pos and tabix.
   If no record -> discard (code: ??) and break
   Assert that only 1 record was returned (should be the case for gnomad vcfs at least)
   Discard alt alleles if allele freq is below af_vcf_min threshold
+  If no alt alleles remaining -> discard (code: ??) and break
 
 As vcfrec could be multialleleic, compare ssrec alleles to vcfrec alleles.
 Search for ssrec allele match with each vcfrec ref-alt allele pair and their reverse complements.
