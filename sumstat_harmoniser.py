@@ -57,13 +57,15 @@ Else error (shouldn't ever get here):
 
 """
 
-import sys
 import os
-from subprocess import Popen, PIPE
+import sys
 import gzip
+from subprocess import Popen, PIPE
 from collections import OrderedDict
 
 def main():
+    """ Implements main logic
+    """
 
     # Get args
     global args
@@ -72,10 +74,10 @@ def main():
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.in_sum_stats, args.in_sep):
 
-        print ss_rec # Debug
+        # print ss_rec # Debug
 
         #
-        # Load and filter VCF record
+        # Load and filter VCF record -------------------------------------------
         #
 
         # Get VCF reference variant for this record
@@ -83,29 +85,104 @@ def main():
                     args.in_reference_vcf_pattern.replace("#", ss_rec.chrom),
                     ss_rec.chrom,
                     ss_rec.pos)
-
         # Discard if there are no records
         if not vcf_rec:
-            # TODO log that no VCF record was found for this variant
-            continue
-
+            continue # TODO log that no VCF record was found for this variant
         # Remove alt alleles if allele freq < threshold
         vcf_rec = vcf_rec.filter_alts_by_af(args.af_vcf_min,
                                             args.af_vcf_field)
-
         # Discard ssrec if there are no alts after filtering
         if vcf_rec.n_alts() == 0:
-            # TODO log that no alts remained after filtering
-            continue
+            continue # TODO log that no alts remained after filtering
 
         #
-        # Remove non-matching multialleleic sites
+        # Remove non-matching multialleleic sites ------------------------------
         #
 
+        # Find and remove non matching alts
+        non_matching_alts = find_non_matching_alleles(ss_rec, vcf_rec)
+        for alt in non_matching_alts:
+            vcf_rec = vcf_rec.remove_alt_al(alt)
+        # Discard ssrec if there are no matching alleles
+        if vcf_rec.n_alts() == 0:
+            continue # TODO log that there were no matching alleles
+        # Discard ssrec if there are multiple matching alleles
+        if vcf_rec.n_alts() > 1:
+            continue # TODO log that there were multiple possibles alleles
+        # Given that only 1 alt should exist now, extract alt and af
+        vcf_alt = vcf_rec.alt_als[0]
+        vcf_alt_af = float(vcf_rec.info[args.af_vcf_field][0])
+
+        #
+        # Harmonise variants ---------------------------------------------------
+        #
+
+        # Harmonise palindromic alleles
+        if is_palindromic(ss_rec.other_al, ss_rec.effect_al):
+            if args.infer_palin==True and args.infer_strand==True:
+
+                # Discard if either MAF is greater than threshold
+                if ss_rec.eaf:
+                    if (af_to_maf(ss_rec.eaf) > args.maf_palin_infer_threshold or
+                        af_to_maf(vcf_alt_af) > args.maf_palin_infer_threshold):
+                        continue # TODO log that MAFs were greater than threshold
+                else:
+                    continue # TODO log that no eaf in sumstat file
+                # Flip if eafs are not concordant
+                if not afs_concordant(ss_rec.eaf, vcf_alt_af):
+                    ss_rec.flip_beta()
+            else:
+                continue # TODO log that it was palindromic
+
+        # Harmonise opposite strand alleles
+        elif compatible_alleles_reverse_strand(ss_rec.other_al,
+                                               ss_rec.effect_al,
+                                               vcf_rec.ref_al,
+                                               vcf_alt):
+            if args.infer_strand:
+                # Flip if ss effect allele matches revcomp of vcf ref allele
+                if ss_rec.effect_al.str() == vcf_rec.ref_al.revcomp().str():
+                    ss_rec.flip_beta()
+            else:
+                continue # TODO log that assuming forward strand, therefore alleles ambiguous
+
+        # Harmonise same strand alleles
+        elif compatible_alleles_forward_strand(ss_rec.other_al,
+                                               ss_rec.effect_al,
+                                               vcf_rec.ref_al,
+                                               vcf_alt):
+            # Flip if the effect allele matches the vcf ref alleles
+            if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
+                ss_rec.flip_beta()
+
+        else:
+            sys.exit("Error: Alleles were not palindromic, opposite strand, or same strand!")
 
 
+        print ss_rec # Debug
 
     return 0
+
+def afs_concordant(af1, af2):
+    """ Checks whether the allele frequencies of two palindromic variants are
+        concordant.
+    Args:
+        af1, af2 (float): Allele frequencies from two datasets
+    Returns:
+        Bool: True if concordant
+    """
+    assert isinstance(af1, float) and isinstance(af2, float)
+    if (af1 >= 0.5 and af2 >= 0.5) or (af1 < 0.5 and af2 < 0.5):
+        return True
+    else:
+        return False
+
+def is_palindromic(A1, A2):
+    """ Checks if two variants are palindromic.
+    Args:
+        A1, A2 (Seq): Alleles (i.e. other and effect alleles)
+    """
+    return A1.str() == A2.revcomp().str()
 
 def find_non_matching_alleles(sumstat_rec, vcf_rec):
     """ For each vcfrec ref-alt pair check whether it matches either the
@@ -116,7 +193,46 @@ def find_non_matching_alleles(sumstat_rec, vcf_rec):
     Returns:
         list of alt alleles to remove
     """
-    pass
+    alts_to_remove = []
+    for ref, alt in vcf_rec.yeild_alleles():
+        if not compatible_alleles_either_strand(sumstat_rec.other_al,
+                                                sumstat_rec.effect_al,
+                                                ref,
+                                                alt):
+            alts_to_remove.append(alt)
+    return alts_to_remove
+
+def compatible_alleles_either_strand(A1, A2, B1, B2):
+    """ Checks whether alleles are compatible, either on the forward or reverse
+        strand
+    Args:
+        A1, A2 (Seq): Alleles from one source
+        B1, B2 (Seq): Alleles from another source
+    Returns:
+        Boolean
+    """
+    return (compatible_alleles_forward_strand(A1, A2, B1, B2) or
+            compatible_alleles_reverse_strand(A1, A2, B1, B2))
+
+def compatible_alleles_forward_strand(A1, A2, B1, B2):
+    """ Checks whether alleles are compatible on the forward strand
+    Args:
+        A1, A2 (Seq): Alleles from one source
+        B1, B2 (Seq): Alleles from another source
+    Returns:
+        Boolean
+    """
+    return set([A1.str(), A2.str()]) == set([B1.str(), B2.str()])
+
+def compatible_alleles_reverse_strand(A1, A2, B1, B2):
+    """ Checks whether alleles are compatible on the forward strand
+    Args:
+        A1, A2 (Seq): Alleles from one source
+        B1, B2 (Seq): Alleles from another source
+    Returns:
+        Boolean
+    """
+    return set([A1.str(), A2.str()]) == set([B1.revcomp().str(), B2.revcomp().str()])
 
 class VCFRecord:
     """ Holds info from a single vcf row
@@ -126,8 +242,8 @@ class VCFRecord:
         self.chrom = str(row[0])
         self.pos = int(row[1])
         self.id = str(row[2])
-        self.ref_al = str(row[3])
-        self.alt_als = row[4].split(",")
+        self.ref_al = Seq(row[3])
+        self.alt_als = [Seq(nucl) for nucl in row[4].split(",")]
         self.qual = row[5]
         self.filter = str(row[6])
         self.info = parse_info_field(row[7])
@@ -169,6 +285,14 @@ class VCFRecord:
         for alt in alts_to_remove:
             self = self.remove_alt_al(alt)
         return self
+
+    def yeild_alleles(self):
+        """ Iterates over alt alleles, yielding list of (ref, alt) tuples.
+        Returns:
+            List of tuples: (ref allele, alt allele)
+        """
+        for alt in self.alt_als:
+            yield (self.ref_al, alt)
 
 def af_to_maf(af):
     """ Converts an allele frequency to a minor allele frequency
@@ -239,6 +363,11 @@ class Seq:
         """ Reverse complement sequence """
         return Seq(self.rev().comp())
 
+    def str(self):
+        """ Returns nucleotide as a string
+        """
+        return str(self.seq)
+
 class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
@@ -249,6 +378,7 @@ class SumStatRecord:
         self.other_al = Seq(other_al)
         self.effect_al = Seq(effect_al)
         self.beta = float(beta)
+        self.flipped = False
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
             self.eaf = float(eaf)
@@ -258,6 +388,28 @@ class SumStatRecord:
         # Assert that chromosome is permissible
         permissible = set([str(x) for x in range(1, 23) + ["X", "Y", "MT"]])
         assert set(self.chrom).issubset(permissible)
+        # Assert that other and effect alleles are different
+        assert self.other_al.str() != self.effect_al.str()
+
+    def flip_beta(self):
+        """ Flip the beta and alleles. Set flipped to True.
+        """
+        # Flip beta
+        self.beta = self.beta * -1
+        # Switch alleles
+        new_effect = self.other_al
+        new_other = self.effect_al
+        self.other_al = new_other
+        self.effect_al = new_effect
+        # Set flipped
+        self.flipped = True
+
+    def alleles(self):
+        """
+        Returns:
+            Tuple of (other, effect) alleles
+        """
+        return (self.other_al, self.effect_al)
 
     def __repr__(self):
         return "\n".join(["Sum stat record",
