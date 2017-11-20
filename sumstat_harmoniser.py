@@ -71,10 +71,13 @@ def main():
     global args
     args = Args_placeholder()
 
+    # Open output handle
+    out_hanlde = open_gzip(args.out_harmonised, "w")
+    header_written = False
+
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.in_sum_stats, args.in_sep):
 
-        # print ss_rec # Debug
 
         #
         # Load and filter VCF record -------------------------------------------
@@ -131,6 +134,7 @@ def main():
                 # Flip if eafs are not concordant
                 if not afs_concordant(ss_rec.eaf, vcf_alt_af):
                     ss_rec.flip_beta()
+                    ss_rec.revcomp_alleles()
             else:
                 continue # TODO log that it was palindromic
 
@@ -140,8 +144,10 @@ def main():
                                                vcf_rec.ref_al,
                                                vcf_alt):
             if args.infer_strand:
-                # Flip if ss effect allele matches revcomp of vcf ref allele
-                if ss_rec.effect_al.str() == vcf_rec.ref_al.revcomp().str():
+                # Take reverse complement of ssrec alleles
+                ss_rec.revcomp_alleles()
+                # Flip if ss effect allele matches vcf ref allele
+                if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
                     ss_rec.flip_beta()
             else:
                 continue # TODO log that assuming forward strand, therefore alleles ambiguous
@@ -158,14 +164,40 @@ def main():
         else:
             sys.exit("Error: Alleles were not palindromic, opposite strand, or same strand!")
 
+        #
+        # Write ssrec to output ------------------------------------------------
+        #
 
-        print ss_rec # Debug
+        # Add harmonised other allele, effect allele, eaf, beta to output
+        out_row = ss_rec.data
+        out_row["OtherAl_hm"] = ss_rec.other_al.str()
+        out_row["EffectAl_hm"] = ss_rec.effect_al.str()
+        if ss_rec.eaf:
+            out_row["EAF_hm"] = str(ss_rec.eaf)
+        else:
+            out_row["EAF_hm"] = "NA"
+        out_row["Beta_hm"] = str(ss_rec.beta)
+
+        # Write header
+        if not header_written:
+            out_hanlde.write(args.out_sep.join(out_row.keys()) + "\n")
+            header_written = True
+
+        # Write row
+        out_hanlde.write(args.out_sep.join(out_row.values()) + "\n")
+
+        # print ss_rec # Debug
+
+    # Close handle
+    out_hanlde.close()
+
+    print "Done!"
 
     return 0
 
 def afs_concordant(af1, af2):
     """ Checks whether the allele frequencies of two palindromic variants are
-        concordant.
+        concordant. Concordant if both are either >0.5 or both are <0.5.
     Args:
         af1, af2 (float): Allele frequencies from two datasets
     Returns:
@@ -178,7 +210,7 @@ def afs_concordant(af1, af2):
         return False
 
 def is_palindromic(A1, A2):
-    """ Checks if two variants are palindromic.
+    """ Checks if two alleles are palindromic.
     Args:
         A1, A2 (Seq): Alleles (i.e. other and effect alleles)
     """
@@ -371,13 +403,14 @@ class Seq:
 class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
-    def __init__(self, rsid, chrom, pos, other_al, effect_al, beta, eaf):
+    def __init__(self, rsid, chrom, pos, other_al, effect_al, beta, eaf, data):
         self.rsid = str(rsid)
         self.chrom = str(chrom)
         self.pos = int(pos)
         self.other_al = Seq(other_al)
         self.effect_al = Seq(effect_al)
         self.beta = float(beta)
+        self.data = data
         self.flipped = False
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
@@ -391,8 +424,17 @@ class SumStatRecord:
         # Assert that other and effect alleles are different
         assert self.other_al.str() != self.effect_al.str()
 
+    def revcomp_alleles(self):
+        """ Reverse complement both the other and effect alleles.
+        """
+        self.effect_al = self.effect_al.revcomp()
+        self.other_al = self.other_al.revcomp()
+
     def flip_beta(self):
-        """ Flip the beta and alleles. Set flipped to True.
+        """ Flip the beta, alleles and eaf. Set flipped to True.
+        Args:
+            revcomp (Bool): If true, will take reverse complement in addition
+                            to flipping.
         """
         # Flip beta
         self.beta = self.beta * -1
@@ -401,6 +443,9 @@ class SumStatRecord:
         new_other = self.effect_al
         self.other_al = new_other
         self.effect_al = new_effect
+        # Flip eaf
+        if self.eaf:
+            self.eaf = 1 - self.eaf
         # Set flipped
         self.flipped = True
 
@@ -439,7 +484,8 @@ def yield_sum_stat_records(inf, sep):
                                   row[args.ss_otherAl_col],
                                   row[args.ss_effectAl_col],
                                   row[args.ss_beta_col],
-                                  row.get(args.ss_eaf_col, None)
+                                  row.get(args.ss_eaf_col, None),
+                                  row
                                   )
         yield ss_record
 
