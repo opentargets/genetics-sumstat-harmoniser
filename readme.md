@@ -9,6 +9,7 @@ Work in progress. Todo:
 #### Requirements
 
 - python2
+- [HTSlib](http://www.htslib.org/download/) (for tabix)
 
 ```
 # Install dependencies into isolated environment
