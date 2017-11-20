@@ -51,9 +51,9 @@ optional arguments:
   --maf_palin_threshold <float>
                         Max MAF that will be used to infer palindrome strand
                         (default: 0.42)
+  --af_vcf_min <float>  Min freq of alt allele to be used (default: 0.001)
   --af_vcf_field <str>  VCF info field containing allele freq (default:
                         AF_NFE)
-  --af_vcf_min <float>  Min freq of alt allele to be included (default: 0.001)
   --in_sep <str>        Input file column separator (default: tab)
   --out_sep <str>       Output file column separator (default: tab)
   --infer_strand <bool>

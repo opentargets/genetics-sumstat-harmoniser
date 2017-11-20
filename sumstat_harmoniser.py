@@ -574,12 +574,12 @@ def parse_args():
     parser.add_argument('--maf_palin_threshold', metavar="<float>",
                         help=('Max MAF that will be used to infer palindrome strand (default: 0.42)'),
                         type=float, default=0.42)
+    parser.add_argument('--af_vcf_min', metavar="<float>",
+                        help=('Min freq of alt allele to be used (default: 0.001)'),
+                        type=float, default=0.001)
     parser.add_argument('--af_vcf_field', metavar="<str>",
                         help=('VCF info field containing allele freq (default: AF_NFE)'),
                         type=str, default="AF_NFE")
-    parser.add_argument('--af_vcf_min', metavar="<float>",
-                        help=('Min freq of alt allele to be included (default: 0.001)'),
-                        type=float, default=0.001)
     parser.add_argument('--in_sep', metavar="<str>",
                         help=('Input file column separator (default: tab)'),
                         type=str, default="\t")
