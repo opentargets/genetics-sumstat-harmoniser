@@ -12,7 +12,7 @@ import sys
 import gzip
 import argparse
 from subprocess import Popen, PIPE
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 
 def main():
     """ Implements main logic.
@@ -23,9 +23,11 @@ def main():
     # args = Args_placeholder()
     args = parse_args()
 
-    # Open output handle
+    # Open output handles
     out_hanlde = open_gzip(args.out, "w")
+    log_hanlde = open_gzip(args.log, "w")
     header_written = False
+    stats = initiate_stats()
 
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.sumstats, args.in_sep):
@@ -42,12 +44,14 @@ def main():
                     ss_rec.pos)
         # Discard if there are no records
         if not vcf_rec:
+            stats["Pre-filter"]["No record in VCF, discarded"] += 1
             continue # TODO log that no VCF record was found for this variant
         # Remove alt alleles if allele freq < threshold
         vcf_rec = vcf_rec.filter_alts_by_af(args.af_vcf_min,
                                             args.af_vcf_field)
         # Discard ssrec if there are no alts after filtering
         if vcf_rec.n_alts() == 0:
+            stats["Pre-filter"]["No alts after MAF filter, discarded"] += 1
             continue # TODO log that no alts remained after filtering
 
         #
@@ -60,9 +64,11 @@ def main():
             vcf_rec = vcf_rec.remove_alt_al(alt)
         # Discard ssrec if there are no matching alleles
         if vcf_rec.n_alts() == 0:
+            stats["Pre-filter"]["0 matching ref-alt pairs, discarded"] += 1
             continue # TODO log that there were no matching alleles
         # Discard ssrec if there are multiple matching alleles
         if vcf_rec.n_alts() > 1:
+            stats["Pre-filter"][">1 matching ref-alt pair, discarded"] += 1
             continue # TODO log that there were multiple possibles alleles
         # Given that only 1 alt should exist now, extract alt and af
         vcf_alt = vcf_rec.alt_als[0]
@@ -80,14 +86,20 @@ def main():
                 if ss_rec.eaf:
                     if (af_to_maf(ss_rec.eaf) > args.maf_palin_threshold or
                         af_to_maf(vcf_alt_af) > args.maf_palin_threshold):
+                        stats["Palindromic"]["MAFs > maf_palin_threshold, discarded"] += 1
                         continue # TODO log that MAFs were greater than threshold
                 else:
+                    stats["Palindromic"]["EAF not in sumstat file, discarded"] += 1
                     continue # TODO log that no eaf in sumstat file
                 # Flip if eafs are not concordant
                 if not afs_concordant(ss_rec.eaf, vcf_alt_af):
                     ss_rec.flip_beta()
                     ss_rec.revcomp_alleles()
+                    stats["Palindromic"]["MAFs not concordant, alleles flipped"] += 1
+                else:
+                    stats["Palindromic"]["MAFs concordant, alleles correct"] += 1
             else:
+                stats["Palindromic"]["infer_palin or infer_strand are False, discarded"] += 1
                 continue # TODO log that it was palindromic
 
         # Harmonise opposite strand alleles
@@ -101,7 +113,11 @@ def main():
                 # Flip if ss effect allele matches vcf ref allele
                 if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
                     ss_rec.flip_beta()
+                    stats["Reverse strand"]["alleles flipped"] += 1
+                else:
+                    stats["Reverse strand"]["alleles correct"] += 1
             else:
+                stats["Reverse strand"]["infer_strand is False, discarded"] += 1
                 continue # TODO log that assuming forward strand, therefore alleles ambiguous
 
         # Harmonise same strand alleles
@@ -112,6 +128,9 @@ def main():
             # Flip if the effect allele matches the vcf ref alleles
             if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
                 ss_rec.flip_beta()
+                stats["Forward strand"]["alleles flipped"] += 1
+            else:
+                stats["Forward strand"]["alleles correct"] += 1
 
         else:
             # Should never reach this 'else' statement
@@ -140,12 +159,75 @@ def main():
 
         # print ss_rec # Debug
 
-    # Close handle
+    # Close handles
     out_hanlde.close()
+    log_hanlde.close()
+
+    # Print stats
+    print "\n" + process_stats_dict(stats) + "\n"
 
     print "Done!"
 
     return 0
+
+def process_stats_dict(stats):
+    """ Process stats dictionary.
+    "Pre-filter":{"No record in VCF, discarded": 0,
+                           "No alts after MAF filter, discarded": 0,
+                           "0 matching ref-alt pairs, discarded": 0,
+                           ">1 matching ref-alt pair, discarded": 0},
+            "Palindromic":{"infer_palin or infer_strand are False, discarded": 0,
+                           "MAFs > maf_palin_threshold, discarded": 0,
+                           "EAF not in sumstat file, discarded": 0,
+                           "MAFs not concordant, alleles flipped": 0,
+                           "MAFs concordant, alleles correct": 0},
+            "Reverse strand":{"alleles flipped": 0,
+                              "alleles correct": 0,
+                              "infer_strand is False, discarded": 0},
+            "Forward strand":{"alleles flipped": 0,
+                              "alleles correct": 0}
+    """
+    # Get number of records for each sub category
+    sums = {}
+    for key in stats:
+        sums[key] = sum(stats[key].values())
+    sums["Total"] = sum(sums.values())
+
+    # Add record stats
+    rows = ["Total records processed: {0}".format(sums["Total"])]
+    for key in ["Pre-filter", "Palindromic", "Reverse strand", "Forward strand"]:
+        rows.append("{0} records: {1} ({2:.1f}%)".format(key, sums[key], 100*float(sums[key])/sums["Total"]))
+        for key2 in stats[key]:
+            rows.append("  {0}: {1} ({2:.1f}%)".format(key2, stats[key][key2], 100*float(stats[key][key2])/sums["Total"]))
+
+    return "\n".join(rows)
+
+def initiate_stats():
+    """ Returns dict of dicts which is used to store statistics
+    """
+    return {"Pre-filter":OrderedDict([
+                           ("No record in VCF, discarded", 0),
+                           ("No alts after MAF filter, discarded", 0),
+                           ("0 matching ref-alt pairs, discarded", 0),
+                           (">1 matching ref-alt pair, discarded", 0)
+                           ]),
+            "Palindromic":OrderedDict([
+                           ("infer_palin or infer_strand are False, discarded", 0),
+                           ("MAFs > maf_palin_threshold, discarded", 0),
+                           ("EAF not in sumstat file, discarded", 0),
+                           ("MAFs not concordant, alleles flipped", 0),
+                           ("MAFs concordant, alleles correct", 0)
+                           ]),
+            "Reverse strand":OrderedDict([
+                           ("alleles flipped", 0),
+                           ("alleles correct", 0),
+                           ("infer_strand is False, discarded", 0)
+                           ]),
+            "Forward strand":OrderedDict([
+                           ("alleles flipped", 0),
+                           ("alleles correct", 0)
+                           ])
+            }
 
 class VCFRecord:
     """ Holds info from a single vcf row

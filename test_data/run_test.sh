@@ -10,7 +10,7 @@ mkdir -p output
 python ../sumstat_harmoniser.py --sumstats sum_stats.testdata.tsv \
   --vcf reference_chr#_vcf.testdata.vcf.gz \
   --out output/testdata.output.tsv \
-  --log output/testdata.log.txt \
+  --log output/testdata.log.tsv \
   --rsid_col rsID \
   --chrom_col chrom \
   --pos_col pos \
