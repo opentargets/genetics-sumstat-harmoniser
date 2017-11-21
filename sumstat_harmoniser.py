@@ -598,10 +598,10 @@ def parse_args():
                         help=('Effect allele column'), type=str, required=True)
     parser.add_argument('--otherAl_col', metavar="<str>",
                         help=('Other allele column'), type=str, required=True)
-    parser.add_argument('--eaf_col', metavar="<str>",
-                        help=('EAF column'), type=str, required=True)
     parser.add_argument('--beta_col', metavar="<str>",
                         help=('beta column'), type=str, required=True)
+    parser.add_argument('--eaf_col', metavar="<str>",
+                        help=('EAF column'), type=str)
     # Other args
     parser.add_argument('--maf_palin_threshold', metavar="<float>",
                         help=('Max MAF that will be used to infer palindrome strand (default: 0.42)'),
