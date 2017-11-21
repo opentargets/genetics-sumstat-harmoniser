@@ -637,32 +637,6 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-# class Args_placeholder:
-#     """ Placeholder for argparse.
-#     """
-#     def __init__(self):
-#         # File args
-#         self.in_sum_stats = "test_data/sum_stats.testdata.tsv"
-#         self.in_reference_vcf_pattern = "test_data/reference_chr#_vcf.testdata.vcf.gz"
-#         self.out_harmonised = "output/output.testdata.tsv"
-#         self.out_log = "logs/testdata"
-#         # Column args
-#         self.ss_rsid_col = "rsID"
-#         self.ss_chrom_col = "chrom"
-#         self.ss_pos_col = "pos"
-#         self.ss_effectAl_col = "effect_allele"
-#         self.ss_otherAl_col = "other_allele"
-#         self.ss_eaf_col = "eaf"
-#         self.ss_beta_col = "beta"
-#         # Other args
-#         self.maf_palin_infer_threshold = 0.42
-#         self.af_vcf_field = "AF_NFE"
-#         self.af_vcf_min = 0.001 # 0.1% MAF
-#         self.in_sep = "\t"
-#         self.out_sep = "\t"
-#         self.infer_strand = True
-#         self.infer_palin = True
-
 if __name__ == '__main__':
 
     main()
