@@ -2,8 +2,8 @@
 #
 
 # Create index of the vcf
-bgzip reference_chr1_vcf.testdata.vcf
-tabix -p vcf reference_chr1_vcf.testdata.vcf
+bgzip -c reference_chr1_vcf.testdata.vcf > reference_chr1_vcf.testdata.vcf.gz
+tabix -p vcf reference_chr1_vcf.testdata.vcf.gz
 
 # Run harmoniser on test data
 mkdir -p output
