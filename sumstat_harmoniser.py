@@ -36,46 +36,55 @@ def main():
         ss_rec_raw = deepcopy(ss_rec)
 
         #
-        # Load and filter VCF record -------------------------------------------
+        # Load and filter VCF records ------------------------------------------
         #
 
-        # Get VCF reference variant for this record
-        vcf_rec = get_vcf_record(
+        # Get VCF reference variants for this record
+        vcf_recs = get_vcf_records(
                     args.vcf.replace("#", ss_rec.chrom),
                     ss_rec.chrom,
                     ss_rec.pos)
+
         # Discard if there are no records
-        if not vcf_rec:
+        if len(vcf_recs) == 0:
             stats["Pre-filter"]["No record in VCF, discarded"] += 1
             write_to_log(log_hanlde, ss_rec_raw, "None; No record in VCF; Discarded")
             continue
+
         # Remove alt alleles if allele freq < threshold
-        vcf_rec = vcf_rec.filter_alts_by_af(args.af_vcf_min,
-                                            args.af_vcf_field)
-        # Discard ssrec if there are no alts after filtering
-        if vcf_rec.n_alts() == 0:
-            stats["Pre-filter"]["No alts after MAF filter, discarded"] += 1
-            write_to_log(log_hanlde, ss_rec_raw, "None; No alts after MAF filter; Discarded")
+        vcf_recs = [vcf_rec.filter_alts_by_af(args.af_vcf_min, args.af_vcf_field)
+                    for vcf_rec in vcf_recs]
+
+        # Remove alt alleles that don't match sum stat alleles
+        for i in range(len(vcf_recs)):
+            non_matching_alts = find_non_matching_alleles(ss_rec, vcf_recs[i])
+            for alt in non_matching_alts:
+                vcf_recs[i] = vcf_recs[i].remove_alt_al(alt)
+
+        # Remove records that don't have any matching alt alleles
+        vcf_recs = [vcf_rec for vcf_rec in vcf_recs if vcf_rec.n_alts() > 0]
+
+        # Discard ss_rec if there are no valid vcf_recs
+        if len(vcf_recs) == 0:
+            stats["Pre-filter"]["No records after filter, discarded"] += 1
+            write_to_log(log_hanlde, ss_rec_raw, "None; No records after filter; Discarded")
             continue
 
-        #
-        # Remove non-matching multialleleic sites ------------------------------
-        #
-
-        # Find and remove non matching alts
-        non_matching_alts = find_non_matching_alleles(ss_rec, vcf_rec)
-        for alt in non_matching_alts:
-            vcf_rec = vcf_rec.remove_alt_al(alt)
-        # Discard ssrec if there are no matching alleles
-        if vcf_rec.n_alts() == 0:
-            stats["Pre-filter"]["0 matching ref-alt pairs, discarded"] += 1
-            write_to_log(log_hanlde, ss_rec_raw, "None; 0 matching ref-alt pairs; Discarded")
+        # Discard ss_rec if there are multiple records
+        if len(vcf_recs) > 1:
+            stats["Pre-filter"]["Multiple records after filter, discarded"] += 1
+            write_to_log(log_hanlde, ss_rec_raw, "None; >1 record after filter; Discarded")
             continue
+
+        # Given that there is now 1 record, use that
+        vcf_rec = vcf_recs[0]
+
         # Discard ssrec if there are multiple matching alleles
         if vcf_rec.n_alts() > 1:
-            stats["Pre-filter"][">1 matching ref-alt pair, discarded"] += 1
-            write_to_log(log_hanlde, ss_rec_raw, "None; >1 matching ref-alt pair; Discarded")
+            stats["Pre-filter"][">1 matching ref-alt pair for record, discarded"] += 1
+            write_to_log(log_hanlde, ss_rec_raw, "None; >1 matching ref-alt pair for record; Discarded")
             continue
+
         # Given that only 1 alt should exist now, extract alt and af
         vcf_alt = vcf_rec.alt_als[0]
         vcf_alt_af = float(vcf_rec.info[args.af_vcf_field][0])
@@ -282,7 +291,7 @@ class SumStatRecord:
             self.eaf = None
         # Assert that chromosome is permissible
         permissible = set([str(x) for x in range(1, 23) + ["X", "Y", "MT"]])
-        assert set(self.chrom).issubset(permissible)
+        assert set([self.chrom]).issubset(permissible)
         # Assert that other and effect alleles are different
         assert self.other_al.str() != self.effect_al.str()
 
@@ -460,26 +469,24 @@ def parse_info_field(field):
     """
     d = {}
     for entry in field.split(";"):
-        key, value = entry.split("=")
-        d[key] = value.split(",")
+        try:
+            key, value = entry.split("=")
+            d[key] = value.split(",")
+        except ValueError:
+            d[entry] = None
     return d
 
-def get_vcf_record(in_vcf, chrom, pos):
+def get_vcf_records(in_vcf, chrom, pos):
     """ Uses tabix to query VCF file. Parses info from record.
     Args:
         in_vcf (str): vcf file
         chrom (str): chromosome
         pos (int): base pair position
     Returns:
-        VCF_record
+        list of VCFRecords
     """
     response = list(tabix_query(in_vcf, chrom, pos, pos))
-    assert len(response) <= 1 # The gnomad vcf should have 1 line per position
-    if len(response) == 1:
-        vcf_rec = VCFRecord(response[0])
-        return vcf_rec
-    else:
-        return None
+    return [VCFRecord(line) for line in response]
 
 def yield_sum_stat_records(inf, sep):
     """ Load lines from summary stat file and convert to SumStatRecord class.
@@ -628,9 +635,9 @@ def initiate_stats():
     """
     return {"Pre-filter":OrderedDict([
                            ("No record in VCF, discarded", 0),
-                           ("No alts after MAF filter, discarded", 0),
-                           ("0 matching ref-alt pairs, discarded", 0),
-                           (">1 matching ref-alt pair, discarded", 0)
+                           ("No records after filter, discarded", 0),
+                           ("Multiple records after filter, discarded", 0),
+                           (">1 matching ref-alt pair for record, discarded", 0)
                            ]),
             "Palindromic":OrderedDict([
                            ("infer_palin or infer_strand are False, discarded", 0),

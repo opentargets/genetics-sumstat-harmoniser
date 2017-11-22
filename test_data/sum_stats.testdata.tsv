@@ -16,3 +16,4 @@ rs14	1	14	G	A	0.3	1	Multiallelic - matches unique ALT, correct ref, same alleles
 rs15	1	15	G	A	0.3	-1	Multiallelic - does not matches unique ALT = discard
 rs16	1	16	D	I	0.2	1	D,I alleles - alleles not in ATGC = discard
 rs17	1	17	G	A	0.3	1	Position doesn't exist in reference = discard
+rs18	1	19	A	G	0.3	1	Position has multiple lines in VCF
