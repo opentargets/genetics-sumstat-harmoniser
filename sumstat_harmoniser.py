@@ -173,14 +173,14 @@ def main():
         # Write row
         out_hanlde.write(args.out_sep.join(out_row.values()) + "\n")
 
-        # print ss_rec # Debug
+    # Print stats and write to log
+    stat_str = process_stats_dict(stats)
+    print "\n" + stat_str + "\n"
+    log_hanlde.write("\n# " + stat_str.replace("\n", "\n# "))
 
     # Close handles
     out_hanlde.close()
     log_hanlde.close()
-
-    # Print stats
-    print "\n" + process_stats_dict(stats) + "\n"
 
     print "Done!"
 
