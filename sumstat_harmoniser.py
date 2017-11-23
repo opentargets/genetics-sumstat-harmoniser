@@ -29,11 +29,18 @@ def main():
     header_written = False
     stats = initiate_stats()
 
+    counter = 0 # DEBUG
+
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.sumstats, args.in_sep):
 
         # Make a unmodified copy of the summary statistic record
         ss_rec_raw = deepcopy(ss_rec)
+
+        # DEBUG
+        counter += 1
+        if counter % 1000 == 0:
+            print counter
 
         #
         # Load and filter VCF records ------------------------------------------
@@ -141,7 +148,7 @@ def main():
             else:
                 stats["Reverse strand"]["infer_strand is False, discarded"] += 1
                 write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; infer_strand False; Discarded")
-                continue # TODO log that assuming forward strand, therefore alleles ambiguous
+                continue
 
         # Harmonise same strand alleles
         elif compatible_alleles_forward_strand(ss_rec.other_al,
@@ -454,7 +461,12 @@ def af_to_maf(af):
     Returns:
         float
     """
-    af = float(af)
+    # Sometimes AF == ".", in these cases, set to 0
+    try:
+        af = float(af)
+    except ValueError:
+        af = 0.0
+
     if af <= 0.5:
         return af
     else:
@@ -473,7 +485,7 @@ def parse_info_field(field):
             key, value = entry.split("=")
             d[key] = value.split(",")
         except ValueError:
-            d[entry] = None
+            d[entry] = []
     return d
 
 def get_vcf_records(in_vcf, chrom, pos):
