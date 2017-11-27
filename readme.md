@@ -69,18 +69,14 @@ optional arguments:
 
 Load summary stat record (ssrec).
 
-Get record from reference VCF (vcfrec) using ssrec chrom:pos and tabix.
-  If no record -> discard and break
-  Assert that only 1 record was returned (should be the case for gnomad vcfs at least)
-  Discard alt alleles if allele freq is below af_vcf_min threshold
-  If no alt alleles remaining -> discard and break
-
-As vcfrec could be multialleleic, compare ssrec alleles to vcfrec alleles.
-Search for ssrec allele match with each vcfrec ref-alt allele pair and their reverse complements.
-Remove alt allele and corresponding INFO entries if not a match.
-  If no matches -> discard ssrec as ambiguous and break
-  If >1 match -> discard ssrec as ambiguous and break
-  If 1 match -> proceed
+Get records from reference VCF (vcfrec) using ssrec chrom:pos and tabix. (There may be multiple lines in the VCF).
+  Discard ssrec if there are no matches in VCF -> discard and break
+  Remove alt alleles if allele freq is below af_vcf_min threshold
+  Remove alt alleles that don't match ssrec alleles on either strand
+  Discard ssrec if there are no records after filtering -> discard and break
+  Discard ssrec if there are multiple vcfrecs (>1) after filtering -> discard and break
+  Discard ssrec if there are multiple alt alleles (>1) after filtering -> discard and break
+  There should now be 1 matching vcf record with 1 matching allele
 
 Check whether ssrec alleles and vcfrec alleles are palindromic
   If palindromic
