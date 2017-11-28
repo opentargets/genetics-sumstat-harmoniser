@@ -47,6 +47,7 @@ optional arguments:
   --otherAl_col <str>   Other allele column
   --beta_col <str>      beta column
   --eaf_col <str>       EAF column
+  --only_chrom <str>    Only process provided chromosome.
   --maf_palin_threshold <float>
                         Max MAF that will be used to infer palindrome strand
                         (default: 0.42)
