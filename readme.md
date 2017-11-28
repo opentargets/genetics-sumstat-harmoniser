@@ -8,7 +8,7 @@ Work in progress. Todo:
 
 #### Requirements
 
-- python2
+- python3
 - [HTSlib](http://www.htslib.org/download/) (for tabix)
 
 ```
