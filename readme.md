@@ -4,6 +4,7 @@ GWAS summary statistics harmoniser
 Work in progress. Todo:
 - Finalise output format
 - Automatically check test data output for inconsistencies
+- Add option to assume forward strand
 
 #### Requirements
 
