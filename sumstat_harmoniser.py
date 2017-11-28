@@ -24,8 +24,8 @@ def main():
     args = parse_args()
 
     # Open output handles
-    out_hanlde = open_gzip(args.out, "w")
-    log_hanlde = open_gzip(args.log, "w")
+    out_hanlde = open_gzip(args.out, "wb")
+    log_hanlde = open_gzip(args.log, "wb")
     header_written = False
     stats = initiate_stats()
 
@@ -44,7 +44,7 @@ def main():
         # DEBUG
         counter += 1
         if counter % 1000 == 0:
-            print counter
+            print(counter)
 
         #
         # Load and filter VCF records ------------------------------------------
@@ -187,22 +187,25 @@ def main():
 
         # Write header
         if not header_written:
-            out_hanlde.write(args.out_sep.join(out_row.keys()) + "\n")
+            outline = args.out_sep.join(out_row.keys()) + "\n"
+            out_hanlde.write(outline.encode("utf-8"))
             header_written = True
 
         # Write row
-        out_hanlde.write(args.out_sep.join(out_row.values()) + "\n")
+        outline = args.out_sep.join(out_row.values()) + "\n"
+        out_hanlde.write(outline.encode("utf-8"))
 
     # Print stats and write to log
     stat_str = process_stats_dict(stats)
-    print "\n" + stat_str + "\n"
-    log_hanlde.write("\n# " + stat_str.replace("\n", "\n# "))
+    print("\n" + stat_str + "\n")
+    outline = "\n# " + stat_str.replace("\n", "\n# ")
+    log_hanlde.write(outline.encode("utf-8"))
 
     # Close handles
     out_hanlde.close()
     log_hanlde.close()
 
-    print "Done!"
+    print("Done!")
 
     return 0
 
@@ -301,7 +304,7 @@ class SumStatRecord:
         else:
             self.eaf = None
         # Assert that chromosome is permissible
-        permissible = set([str(x) for x in range(1, 23) + ["X", "Y", "MT"]])
+        permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
         assert set([self.chrom]).issubset(permissible)
         # Assert that other and effect alleles are different
         assert self.other_al.str() != self.effect_al.str()
@@ -534,14 +537,14 @@ def parse_sum_stats(inf, sep):
     Returns:
         OrderedDict: {column: value}
     """
-    with open_gzip(inf, "r") as in_handle:
-        header = in_handle.readline().rstrip().split(sep)
+    with open_gzip(inf, "rb") as in_handle:
+        header = in_handle.readline().decode("utf-8").rstrip().split(sep)
         for line in in_handle:
-            values = line.rstrip().split(sep)
+            values = line.decode("utf-8").rstrip().split(sep)
             assert(len(values) == len(header))
             yield OrderedDict(zip(header, values))
 
-def open_gzip(inf, rw="r"):
+def open_gzip(inf, rw="rb"):
     """ Returns handle using gzip if gz file extension.
     """
     if inf.split(".")[-1] == "gz":
@@ -556,7 +559,7 @@ def tabix_query(filename, chrom, start, end):
     query = '{}:{}-{}'.format(chrom, start, end)
     process = Popen(['tabix', '-f', filename, query], stdout=PIPE)
     for line in process.stdout:
-        yield line.strip().split()
+        yield [s.decode("utf-8") for s in line.strip().split()]
 
 def parse_args():
     """ Parse command line args using argparse.
@@ -685,8 +688,8 @@ def write_to_log(handle, ssrec, message):
         message (str): message to log
     Returns: 0
     """
-    outline = "\t".join([str(x) for x in ssrec.tolist()] + [message])
-    handle.write(outline + "\n")
+    outline = "\t".join([str(x) for x in ssrec.tolist()] + [message]) + "\n"
+    handle.write(outline.encode("utf-8"))
     return 0
 
 if __name__ == '__main__':
