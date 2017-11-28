@@ -34,6 +34,10 @@ def main():
     # Process each row in summary statistics
     for ss_rec in yield_sum_stat_records(args.sumstats, args.in_sep):
 
+        # If set to only process 1 chrom, skip none matching chroms
+        if args.only_chrom and not args.only_chrom == ss_rec.chrom:
+            continue
+
         # Make a unmodified copy of the summary statistic record
         ss_rec_raw = deepcopy(ss_rec)
 
@@ -586,6 +590,8 @@ def parse_args():
     parser.add_argument('--eaf_col', metavar="<str>",
                         help=('EAF column'), type=str)
     # Other args
+    parser.add_argument('--only_chrom', metavar="<str>",
+                        help=('Only process provided chromosome.'), type=str)
     parser.add_argument('--maf_palin_threshold', metavar="<float>",
                         help=('Max MAF that will be used to infer palindrome strand (default: 0.42)'),
                         type=float, default=0.42)
@@ -636,9 +642,11 @@ def process_stats_dict(stats):
     # Add record stats
     rows = ["Total records processed: {0}".format(sums["Total"])]
     for key in ["Pre-filter", "Palindromic", "Reverse strand", "Forward strand"]:
-        rows.append("{0} records: {1} ({2:.1f}%)".format(key, sums[key], 100*float(sums[key])/sums["Total"]))
+        perc = 100 * float(sums[key])/sums["Total"] if sums["Total"] != 0 else 0
+        rows.append("{0} records: {1} ({2:.1f}%)".format(key, sums[key], perc))
         for key2 in stats[key]:
-            rows.append("  {0}: {1} ({2:.1f}%)".format(key2, stats[key][key2], 100*float(stats[key][key2])/sums["Total"]))
+            perc = 100 * float(stats[key][key2])/sums["Total"] if sums["Total"] else 0
+            rows.append("  {0}: {1} ({2:.1f}%)".format(key2, stats[key][key2], perc))
 
     return "\n".join(rows)
 
