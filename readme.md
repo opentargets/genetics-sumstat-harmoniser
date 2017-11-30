@@ -83,7 +83,7 @@ Get records from reference VCF (vcfrec) using ssrec chrom:pos and tabix. (There 
 Check whether ssrec alleles and vcfrec alleles are palindromic
   If palindromic
     If infer_palin==True and infer_strand==True:
-      If MAF of either ssrec or vcfrec alleles is > maf_palin_infer_threshold -> discard (error code: ??)
+      If MAF of either ssrec or vcfrec alleles is > maf_palin_infer_threshold -> discard
       If ssrec and vcfrec EAFs are not concordant (one is >0.5 and other <0.5)
         Flip beta and break
       Else:
