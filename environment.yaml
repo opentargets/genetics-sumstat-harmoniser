@@ -1,2 +1,5 @@
+channels:
+- bioconda
 dependencies:
 - python=3
+- htslib
