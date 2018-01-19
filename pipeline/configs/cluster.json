@@ -1,0 +1,10 @@
+{
+    "__default__" :
+    {
+        "mem"    : 100,
+        "runtime"   : 10,
+        "name"      : "JOBNAME.{rule}.{wildcards}",
+        "output"    : "logs/cluster/{rule}.{wildcards}.out",
+        "error"     : "logs/cluster/{rule}.{wildcards}.err"
+    }
+}
