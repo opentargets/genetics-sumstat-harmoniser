@@ -9,16 +9,6 @@ Todo:
 - Write documentation
 - Add VCF location to the `configs/config.yaml` file
 
-### Set up environment
-
-```
-# Install dependencies into isolated environment
-conda env create -n sumstat_harmoniser_pipeline --file environment.yaml
-
-# Activate environment
-source activate sumstat_harmoniser_pipeline
-```
-
 ### Run pipeline
 
 ```
