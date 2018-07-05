@@ -29,10 +29,8 @@ def main():
     header_written = False
     stats = initiate_stats()
 
-    counter = 0 # DEBUG
-
     # Process each row in summary statistics
-    for ss_rec in yield_sum_stat_records(args.sumstats, args.in_sep):
+    for counter, ss_rec in enumerate(yield_sum_stat_records(args.sumstats, args.in_sep)):
 
         # If set to only process 1 chrom, skip none matching chroms
         if args.only_chrom and not args.only_chrom == ss_rec.chrom:
@@ -41,10 +39,9 @@ def main():
         # Make a unmodified copy of the summary statistic record
         ss_rec_raw = deepcopy(ss_rec)
 
-        # DEBUG
-        counter += 1
+        # DEBUG print progress
         if counter % 1000 == 0:
-            print(counter)
+            print(counter + 1)
 
         #
         # Load and filter VCF records ------------------------------------------
