@@ -1,6 +1,0 @@
-# Harmonisation python script
-harmonisation_script: ../sumstat_harmoniser/sumstat_harmoniser.py
-# Input summary statistics files - use {study} wildcard
-in_sumstat_pattern: data/sumstats/{study}.sumstats.tsv.gz
-# Chromosomes. Processing to be split by chromosome.
-chroms: ["1", "2"]

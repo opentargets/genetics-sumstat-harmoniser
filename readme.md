@@ -2,11 +2,14 @@ GWAS summary statistics harmoniser
 ==================================
 
 Work in progress. Todo:
-- Finalise output format
 - Add option to assume forward/reverse strand
 - Add preliminary check of forward/reverse stats
 - Add option to use odds ratio (OR), rather than betas
 - Remove allele frequency filter
+- Add proper logging
+- Add encoding of what was done to each variant
+- Finalise output format
+- Automate test output check
 
 Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
   - [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
