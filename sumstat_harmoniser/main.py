@@ -106,8 +106,9 @@ def main():
 
         # Harmonise palindromic alleles
         if is_palindromic(ss_rec.other_al, ss_rec.effect_al):
-            if args.infer_palin==True and args.infer_strand==True:
 
+            # Infer strand mode
+            if args.palin_mode == 'infer':
                 # Discard if either MAF is greater than threshold
                 if ss_rec.eaf:
                     if (af_to_maf(ss_rec.eaf) > args.maf_palin_threshold or
@@ -128,17 +129,21 @@ def main():
                 else:
                     stats["Palindromic"]["MAFs concordant, alleles correct"] += 1
                     write_to_log(log_hanlde, ss_rec_raw, "Palindromic; MAFs concordant; None")
-            else:
-                stats["Palindromic"]["infer_palin or infer_strand are False, discarded"] += 1
-                write_to_log(log_hanlde, ss_rec_raw, "Palindromic; infer_palin or infer_strand False; Discarded")
-                continue
 
-        # Harmonise opposite strand alleles
-        elif compatible_alleles_reverse_strand(ss_rec.other_al,
-                                               ss_rec.effect_al,
-                                               vcf_rec.ref_al,
-                                               vcf_alt):
-            if args.infer_strand:
+            # Assume palindromic variants are on the forward strand
+            elif args.palin_mode == 'forward':
+
+                # Flip if the effect allele matches the vcf ref alleles
+                if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
+                    ss_rec.flip_beta()
+                    stats["Palindromic"]["assuming forward, alleles flipped"] += 1
+                    write_to_log(log_hanlde, ss_rec_raw, "Palindromic; assuming forward; alleles flipped; Flipped")
+                else:
+                    stats["Palindromic"]["assuming forward, alleles correct"] += 1
+                    write_to_log(log_hanlde, ss_rec_raw, "Palindromic; assuming forward; alleles correct; None")
+
+            elif args.palin_mode == 'reverse':
+
                 # Take reverse complement of ssrec alleles
                 ss_rec.revcomp_alleles()
                 # Flip if ss effect allele matches vcf ref allele
@@ -149,10 +154,30 @@ def main():
                 else:
                     stats["Reverse strand"]["alleles correct"] += 1
                     write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; alleles correct; None")
+
+            # ==================== HERE ================================================
             else:
-                stats["Reverse strand"]["infer_strand is False, discarded"] += 1
-                write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; infer_strand False; Discarded")
+                stats["Palindromic"]["infer_palin or infer_strand are False, discarded"] += 1
+                write_to_log(log_hanlde, ss_rec_raw, "Palindromic; infer_palin or infer_strand False; Discarded")
                 continue
+
+        # Harmonise opposite strand alleles
+        elif compatible_alleles_reverse_strand(ss_rec.other_al,
+                                               ss_rec.effect_al,
+                                               vcf_rec.ref_al,
+                                               vcf_alt):
+
+            # Take reverse complement of ssrec alleles
+            ss_rec.revcomp_alleles()
+            # Flip if ss effect allele matches vcf ref allele
+            if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
+                ss_rec.flip_beta()
+                stats["Reverse strand"]["alleles flipped"] += 1
+                write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; alleles flipped; Flipped")
+            else:
+                stats["Reverse strand"]["alleles correct"] += 1
+                write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; alleles correct; None")
+
 
         # Harmonise same strand alleles
         elif compatible_alleles_forward_strand(ss_rec.other_al,

@@ -50,12 +50,18 @@ def parse_args():
                         help=('Output file column separator (default: tab)'),
                         type=str, default="\t")
     # Harmonisation options
-    parser.add_argument('--infer_strand', metavar="<bool>",
-                        help=('Infer and flip reverse strand alleles? [True|False] (default: True)'),
-                        type=str2bool, default=True)
-    parser.add_argument('--infer_palin', metavar="<bool>",
-                        help=('Infer and flip palindromic alleles? [True|False] (default: True)'),
-                        type=str2bool, default=True)
+    # parser.add_argument('--infer_strand', metavar="<bool>",
+    #                     help=('Infer and flip reverse strand alleles? [True|False] (default: True)'),
+    #                     type=str2bool, default=True)
+    parser.add_argument('--palin_mode', metavar="[infer|forward|reverse|drop]",
+                        help=('Mode to use for palindromic variants: '
+                              '(a) infer strand from effect-allele freq, '
+                              '(b) assume forward strand, '
+                              '(c) assume reverse strand, '
+                              '(d) drop all palindromic variants. '
+                              '(default: infer)'),
+                        choices=['infer', 'forward', 'reverse', 'drop'],
+                        type=str2bool, default='infer')
     return parser.parse_args()
 
 def afs_concordant(af1, af2):
