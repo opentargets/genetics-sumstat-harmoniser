@@ -2,14 +2,16 @@ GWAS summary statistics harmoniser
 ==================================
 
 Work in progress. Todo:
-- Add option to assume forward/reverse strand/inder/drop palindromic
-- Remove infer_strand
-- Add preliminary check of forward/reverse stats
+- (✓) Add option to assume forward/reverse strand/inder/drop palindromic.
+- Keep all variants in the output:
+  * Change summary stat class so that harmonised fields are stored separately from raw fields.
+  * Add encoding of what was done to each variant
+  * Remove all `continue` statements
+- (✓) Remove infer_strand
 - Add option to use odds ratio (OR), rather than betas
   * Assert that either beta or OR is provided
 - Remove allele frequency filter
-- Add proper logging
-- Add encoding of what was done to each variant
+- Add preliminary check of forward/reverse stats
 - Finalise output format
 - Tests
   * Automate test output check

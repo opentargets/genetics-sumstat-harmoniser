@@ -149,17 +149,20 @@ def main():
                 # Flip if ss effect allele matches vcf ref allele
                 if ss_rec.effect_al.str() == vcf_rec.ref_al.str():
                     ss_rec.flip_beta()
-                    stats["Reverse strand"]["alleles flipped"] += 1
-                    write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; alleles flipped; Flipped")
+                    stats["Palindromic"]["alleles flipped"] += 1
+                    write_to_log(log_hanlde, ss_rec_raw, "Palindromic; assuming reverse; alleles flipped; Flipped")
                 else:
-                    stats["Reverse strand"]["alleles correct"] += 1
-                    write_to_log(log_hanlde, ss_rec_raw, "Reverse strand; alleles correct; None")
+                    stats["Palindromic"]["alleles correct"] += 1
+                    write_to_log(log_hanlde, ss_rec_raw, "Palindromic; assuming reverse; alleles correct; None")
 
-            # ==================== HERE ================================================
+            elif args.palin_mode == 'drop':
+
+                #
+                stats["Palindromic"]["won't harmonise"] += 1
+                write_to_log(log_hanlde, ss_rec_raw, "Palindromic; Dropping variant")
+
             else:
-                stats["Palindromic"]["infer_palin or infer_strand are False, discarded"] += 1
-                write_to_log(log_hanlde, ss_rec_raw, "Palindromic; infer_palin or infer_strand False; Discarded")
-                continue
+                sys.exit('Error! You should never see this error.')
 
         # Harmonise opposite strand alleles
         elif compatible_alleles_reverse_strand(ss_rec.other_al,
