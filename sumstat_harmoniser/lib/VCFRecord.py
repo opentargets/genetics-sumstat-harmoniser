@@ -1,3 +1,5 @@
+from lib.Seq import Seq
+
 class VCFRecord:
     """ Holds info from a single vcf row
     """
@@ -73,3 +75,19 @@ class VCFRecord:
         """
         for alt in self.alt_als:
             yield (self.ref_al, alt)
+
+def parse_info_field(field):
+    """ Parses a vcf info field in to a dictionary
+    Args:
+        field (str): info field from vcf
+    Returns:
+        Dict: {name:[val1, val2]}
+    """
+    d = {}
+    for entry in field.split(";"):
+        try:
+            key, value = entry.split("=")
+            d[key] = value.split(",")
+        except ValueError:
+            d[entry] = []
+    return d

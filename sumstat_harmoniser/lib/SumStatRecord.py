@@ -1,33 +1,43 @@
+from lib.Seq import Seq
+
 class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
-    def __init__(self, rsid, chrom, pos, other_al, effect_al, beta, eaf, data):
-        self.rsid = str(rsid)
+    def __init__(self, rsid, chrom, pos, other_al, effect_al, beta, oddsr, eaf,
+                 data):
+
+        # Set raw info
+        self.orig_rsid = str(rsid)
         self.chrom = str(chrom)
         self.pos = int(pos)
         self.other_al = Seq(other_al)
         self.effect_al = Seq(effect_al)
-        self.beta = float(beta)
         self.data = data
-        self.flipped = False
+        self.beta = float(beta) if beta else None
+        self.oddsr = float(oddsr) if oddsr else None
+
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
             self.eaf = float(eaf)
             assert 0<= self.eaf <= 1
         else:
             self.eaf = None
+
         # Assert that chromosome is permissible
         permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
         assert set([self.chrom]).issubset(permissible)
+
         # Assert that other and effect alleles are different
         assert self.other_al.str() != self.effect_al.str()
 
-    def tolist(self):
-        """ Returns identifying info (rsid, chrom, pos, alleles) as a list
-        Returns:
-            list
-        """
-        return [self.rsid, self.chrom, self.pos, self.other_al, self.effect_al]
+        # Set harmonised values
+        self.hm_rsid = None
+        self.hm_chrom = None
+        self.hm_pos = None
+        self.hm_other_al = None
+        self.hm_effect_al = None
+        self.is_harmonised = False
+        self.hm_code = None
 
     def revcomp_alleles(self):
         """ Reverse complement both the other and effect alleles.
@@ -42,7 +52,11 @@ class SumStatRecord:
                             to flipping.
         """
         # Flip beta
-        self.beta = self.beta * -1
+        if self.beta:
+            self.beta = self.beta * -1
+        # Flip OR
+        if self.oddsr:
+            self.oddsr = self.oddsr ** -1
         # Switch alleles
         new_effect = self.other_al
         new_other = self.effect_al
@@ -51,8 +65,6 @@ class SumStatRecord:
         # Flip eaf
         if self.eaf:
             self.eaf = 1 - self.eaf
-        # Set flipped
-        self.flipped = True
 
     def alleles(self):
         """
@@ -69,5 +81,6 @@ class SumStatRecord:
                           "  other allele : " + str(self.other_al),
                           "  effect allele: " + str(self.effect_al),
                           "  beta         : " + str(self.beta),
+                          "  odds ratio   : " + str(self.oddsr),
                           "  EAF          : " + str(self.eaf)
                           ])
