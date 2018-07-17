@@ -12,7 +12,10 @@ class VCFRecord:
         self.alt_als = [Seq(nucl) for nucl in row[4].split(",")]
         self.qual = row[5]
         self.filter = str(row[6])
-        self.info = parse_info_field(row[7])
+        try:
+            self.info = parse_info_field(row[7])
+        except IndexError:
+            self.info = {}
 
     def hgvs(self):
         """ Represents variants in simplified HGVS format:

@@ -330,7 +330,8 @@ def harmonise_palindromic(ss_rec, vcf_rec):
     if args.palin_mode == 'infer':
 
         # Extract allele frequency if argument is provided
-        if args.af_vcf_field:
+        print(vcf_rec.info)
+        if args.af_vcf_field and args.af_vcf_field in vcf_rec.info:
             vcf_alt_af = float(vcf_rec.info[args.af_vcf_field][0])
         else:
             ss_rec.hm_code = 17
