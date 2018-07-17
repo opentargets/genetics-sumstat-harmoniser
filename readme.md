@@ -2,29 +2,28 @@ GWAS summary statistics harmoniser
 ==================================
 
 Work in progress. Todo:
-(✓) Add option to assume forward/reverse strand/inder/drop palindromic.
-(✓) Keep all variants in the output:
-  (✓) Add encoding of what was done to each variant
-  (✓) Add condition on code == None
-  (✓) Remove all `continue` statements
-  (✓) Get hamronised rsid from vcf
-(✓) Remove infer_strand
-(✓) Add option to use odds ratio (OR), rather than betas
-  (✓) Remove requirement for beta
-  (✓) Add option for OR and integrate with SumStat class
-  (✓) Assert that either beta or OR is provided
-(✓) Remove requirement for allele frequency
-(✓) Remove allele frequency filter
-(✓) Add preliminary check of forward/reverse stats
-(✓) Finalise output format
-( ) Tests
-  ( ) Automate test output check
-  ( ) Add test for different parameters
-  ( ) Test preliminary run through
-
-Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
-  - [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
-  - Load required lines from reference VCF into memory
+- (✓) Add option to assume forward/reverse strand/inder/drop palindromic.
+- (✓) Keep all variants in the output:
+  - (✓) Add encoding of what was done to each variant
+  - (✓) Add condition on code == None
+  - (✓) Remove all `continue` statements
+  - (✓) Get hamronised rsid from vcf
+- (✓) Remove infer_strand
+- (✓) Add option to use odds ratio (OR), rather than betas
+  - (✓) Remove requirement for beta
+  - (✓) Add option for OR and integrate with SumStat class
+  - (✓) Assert that either beta or OR is provided
+- (✓) Remove requirement for allele frequency
+- (✓) Remove allele frequency filter
+- (✓) Add preliminary check of forward/reverse stats
+- (✓) Finalise output format
+- ( ) Tests
+  - ( ) Automate test output check
+  - ( ) Add test for different parameters
+  - ( ) Test preliminary run through
+- ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
+  - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
+  - ( ) Load required lines from reference VCF into memory
 
 #### Requirements
 
