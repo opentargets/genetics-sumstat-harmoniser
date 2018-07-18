@@ -103,12 +103,62 @@ def main():
     else:
         print('Testing --palin_mode forward: FAIL')
 
+    # Test harmonise using `--palin_mode reverse` on test data
+    out_reverse_harm = os.path.join(outdir, 'test.palin_reverse.harmonised.tsv')
+    out_reverse_stats = os.path.join(outdir, 'test.palin_reverse.stats.tsv')
+    expected_reverse_harm = 'expected_output/test.palin_reverse.harmonised.expected.tsv'
+    expected_reverse_stats = 'expected_output/test.palin_reverse.stats.expected.tsv'
+    cmd = ('{script} '
+           '--sumstats test_data/sum_stats.testdata.tsv '
+           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           '--hm_sumstats {out_harm} '
+           '--hm_statfile {out_stats} '
+           '--chrom_col chrom '
+           '--pos_col pos '
+           '--effAl_col effect_allele '
+           '--otherAl_col other_allele '
+           '--eaf_col eaf '
+           '--beta_col beta '
+           '--palin_mode reverse').format(
+           script=hm_script,
+           out_harm=out_reverse_harm,
+           out_stats=out_reverse_stats)
+    sp.call(cmd, shell=True, stdout=stdout_h)
+    if ((md5(out_reverse_harm) == md5(expected_reverse_harm)) and
+        (md5(out_reverse_stats) == md5(expected_reverse_stats))):
+        print('Testing --palin_mode reverse: PASS')
+    else:
+        print('Testing --palin_mode reverse: FAIL')
+
+    # Test harmonise using `--palin_mode drop` on test data
+    out_drop_harm = os.path.join(outdir, 'test.palin_drop.harmonised.tsv')
+    out_drop_stats = os.path.join(outdir, 'test.palin_drop.stats.tsv')
+    expected_drop_harm = 'expected_output/test.palin_drop.harmonised.expected.tsv'
+    expected_drop_stats = 'expected_output/test.palin_drop.stats.expected.tsv'
+    cmd = ('{script} '
+           '--sumstats test_data/sum_stats.testdata.tsv '
+           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           '--hm_sumstats {out_harm} '
+           '--hm_statfile {out_stats} '
+           '--chrom_col chrom '
+           '--pos_col pos '
+           '--effAl_col effect_allele '
+           '--otherAl_col other_allele '
+           '--eaf_col eaf '
+           '--beta_col beta '
+           '--palin_mode drop').format(
+           script=hm_script,
+           out_harm=out_drop_harm,
+           out_stats=out_drop_stats)
+    sp.call(cmd, shell=True, stdout=stdout_h)
+    if ((md5(out_drop_harm) == md5(expected_drop_harm)) and
+        (md5(out_drop_stats) == md5(expected_drop_stats))):
+        print('Testing --palin_mode drop: PASS')
+    else:
+        print('Testing --palin_mode drop: FAIL')
 
     # Close stdout handle
     stdout_h.close()
-
-
-
 
     return 0
 

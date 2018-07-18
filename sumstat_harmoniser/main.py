@@ -40,9 +40,6 @@ def main():
         if args.only_chrom and not args.only_chrom == ss_rec.chrom:
             continue
 
-        # Make a unmodified copy of the summary statistic record
-        ss_rec_raw = deepcopy(ss_rec)
-
         # # DEBUG print progress
         # if counter % 1000 == 0:
         #     print(counter + 1)
