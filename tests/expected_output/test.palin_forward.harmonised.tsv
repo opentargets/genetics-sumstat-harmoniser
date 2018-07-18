@@ -1,0 +1,23 @@
+hm_varid	hm_rsid	hm_chrom	hm_pos	hm_other_allele	hm_effect_allele	hm_beta	hm_OR	hm_eaf	hm_code	rsID	chrom	pos	other_allele	effect_allele	eaf	beta	comment
+1_1_G_A	rs1	1	1	G	A	1.0		0.3	10	rs1	1	1	G	A	0.3	1	"Unambiguous - SNP - correct strand, same alleles = no change"
+1_2_G_A	rs2	1	2	G	A	1.0		0.30000000000000004	11	rs2	1	2	A	G	0.7	-1	"Unambiguous - SNP - correct strand, flipped alleles = flip beta"
+1_3_G_A	rs3	1	3	G	A	1.0		0.3	12	rs3	1	3	C	T	0.3	1	"Unambiguous - SNP - incorrect strand, same alleles = no change"
+1_4_G_A	rs4	1	4	G	A	1.0		0.30000000000000004	13	rs4	1	4	T	C	0.7	-1	"Unambiguous - SNP - incorrect strand, flipped alleles = flip beta"
+									15	rs5	1	5	C	A	0.3	1	Ambiguous - SNP = discard
+1_6_G_GAT	rs6	1	6	G	GAT	1.0		0.2	10	rs6	1	6	G	GAT	0.2	1	"Unambiguous - indel - correct strand, same alleles = no change"
+1_7_G_GAT	rs7	1	7	G	GAT	1.0		0.19999999999999996	11	rs7	1	7	GAT	G	0.8	-1	"Unambiguous - indel - correct strand, flipped alleles = flip beta"
+1_8_G_GAT	rs8	1	8	G	GAT	1.0		0.2	12	rs8	1	8	C	ATC	0.2	1	"Unambiguous - indel - incorrect strand, same alleles = no change"
+1_9_G_GAT	rs9	1	9	G	GAT	1.0		0.19999999999999996	13	rs9	1	9	ATC	C	0.8	-1	"Unambiguous - indel - incorrect strand, flipped alleles = flip beta"
+									15	rs10	1	10	G	GCT	0.2	1	Ambiguous - indel = discard
+1_11_T_A	rs11	1	11	T	A	1.0		0.1	5	rs11	1	11	T	A	0.1	1	"Palindromic - SNP - inferrable, forward strand, same alleles = no change"
+1_12_T_A	rs12	1	12	T	A	-1.0		0.9	5	rs12	1	12	T	A	0.9	-1	"Palindromic - SNP - inferrable, reverse strand, flipped alleles = flipped beta"
+1_11_T_A	rs11	1	11	T	A	1.0		0.9	6	rs11	1	11	A	T	0.1	-1	"Palindromic - SNP - inferrable, forward strand, flipped alleles = no change"
+1_12_T_A	rs12	1	12	T	A	-1.0		0.09999999999999998	6	rs12	1	12	A	T	0.9	1	"Palindromic - SNP - inferrable, reverse strand, same alleles = flipped beta"
+1_13_T_A	rs13	1	13	T	A	1.0		0.45	5	rs13	1	13	T	A	0.45	1	Palindromic - SNP - not inferrable = discard
+1_14_G_A	rs14	1	14	G	A	1.0		0.3	10	rs14	1	14	G	A	0.3	1	"Multiallelic - matches unique ALT, correct ref, same alleles = no change"
+									16	rs15	1	15	G	A	0.3	-1	Multiallelic - does not matches unique ALT = discard
+									15	rs16	1	16	D	I	0.2	1	"D,I alleles - alleles not in ATGC = discard"
+									15	rs17	1	17	G	A	0.3	1	Position doesn't exist in reference = discard
+									15	rs18	1	18	A	G	0.3	1	Position has multiple lines in VCF
+1_20_T_A	rs20	1	20	T	A	1.0			5	rs20	1	20	T	A		1	"Palindromic, forward strand but EAF not known"
+1_21_T_A	rs21	1	21	T	A	1.0		0.1	5	rs21	1	21	T	A	0.1	1	"Palindromic, forward strand but VCF alt AF not known"

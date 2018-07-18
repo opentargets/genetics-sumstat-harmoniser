@@ -17,6 +17,7 @@ Work in progress. Todo:
 - (✓) Remove allele frequency filter
 - (✓) Add preliminary check of forward/reverse stats
 - (✓) Finalise output format
+- ( ) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
 - ( ) Tests
   - ( ) Automate test output check
   - ( ) Add test for different parameters
