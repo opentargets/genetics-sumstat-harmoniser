@@ -3,11 +3,10 @@ from lib.Seq import Seq
 class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
-    def __init__(self, rsid, chrom, pos, other_al, effect_al, beta, oddsr, eaf,
+    def __init__(self, chrom, pos, other_al, effect_al, beta, oddsr, eaf,
                  data):
 
         # Set raw info
-        self.orig_rsid = str(rsid)
         self.chrom = str(chrom)
         self.pos = int(pos)
         self.other_al = Seq(other_al)
@@ -75,7 +74,6 @@ class SumStatRecord:
 
     def __repr__(self):
         return "\n".join(["Sum stat record",
-                          "  rsID         : " + self.rsid,
                           "  chrom        : " + self.chrom,
                           "  pos          : " + str(self.pos),
                           "  other allele : " + str(self.other_al),
