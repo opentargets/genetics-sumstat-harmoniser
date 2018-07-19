@@ -53,6 +53,7 @@ usage: main.py [-h] --sumstats <file> --vcf <file> [--hm_sumstats <file>]
                --otherAl_col <str> [--beta_col <str>] [--or_col <str>]
                [--eaf_col <str>] [--only_chrom <str>] [--in_sep <str>]
                [--out_sep <str>] [--na_rep <str>]
+               [--chrom_map <str> [<str> ...]]
 
 Summary statistc harmoniser
 
@@ -102,4 +103,7 @@ Other args:
   --in_sep <str>        Input file column separator (default: tab)
   --out_sep <str>       Output file column separator (default: tab)
   --na_rep <str>        How to represent NA values in output (default: "")
+  --chrom_map <str> [<str> ...]
+                        Map summary stat chromosome names, e.g. `--chrom_map
+                        23=X 24=Y`
 ```
