@@ -21,7 +21,7 @@ Work in progress. Todo:
   - (✓) Automate test output check
   - (✓) Add test for different parameters
   - (✓) Test preliminary run through
-- ( ) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
+- (✓) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
 - ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
   - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
   - ( ) Load required lines from reference VCF into memory

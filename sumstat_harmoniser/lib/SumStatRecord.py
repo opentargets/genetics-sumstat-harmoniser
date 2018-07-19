@@ -23,8 +23,8 @@ class SumStatRecord:
             self.eaf = None
 
         # Assert that chromosome is permissible
-        permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
-        assert set([self.chrom]).issubset(permissible)
+        # permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
+        # assert set([self.chrom]).issubset(permissible)
 
         # Assert that other and effect alleles are different
         assert self.other_al.str() != self.effect_al.str()

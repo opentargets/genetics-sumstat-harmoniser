@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+map#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Ed Mountjoy
@@ -12,7 +12,7 @@ import hashlib
 def main():
 
     # Args
-    in_test_vcf = 'test_data/reference_chr1_vcf.testdata.vcf'
+    in_test_vcf = 'test_data/reference_vcf.testdata.vcf'
     in_test_sumstats = 'test_data/sum_stats.testdata.tsv'
     hm_script = '../bin/sumstat_harmoniser'
     stdout_log = 'output/stdout.txt'
@@ -30,16 +30,18 @@ def main():
 
     # Test using `--strand_counts` on test data
     out_strand_counts = os.path.join(outdir, 'test.strand_counts.tsv')
-    expected_strand_counts = 'expected_output/test.strand_counts.expected.tsv'
+    expected_strand_counts = 'expected_output/test.strand_counts.tsv'
     cmd = ('{script} '
-           ' --sumstats test_data/sum_stats.testdata.tsv '
-           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
            '--strand_counts {out_file} '
            '--chrom_col chrom '
            '--pos_col pos '
            '--effAl_col effect_allele '
            '--otherAl_col other_allele').format(
             script=hm_script,
+            in_sumstats=in_test_sumstats,
+            in_vcf=in_test_vcf,
             out_file=out_strand_counts)
     sp.call(cmd, shell=True, stdout=stdout_h)
     if md5(out_strand_counts) == md5(expected_strand_counts):
@@ -50,11 +52,11 @@ def main():
     # Test harmonise using `--palin_mode infer` on test data
     out_infer_harm = os.path.join(outdir, 'test.palin_infer.harmonised.tsv')
     out_infer_stats = os.path.join(outdir, 'test.palin_infer.stats.tsv')
-    expected_infer_harm = 'expected_output/test.palin_infer.harmonised.expected.tsv'
-    expected_infer_stats = 'expected_output/test.palin_infer.stats.expected.tsv'
+    expected_infer_harm = 'expected_output/test.palin_infer.harmonised.tsv'
+    expected_infer_stats = 'expected_output/test.palin_infer.stats.tsv'
     cmd = ('{script} '
-           '--sumstats test_data/sum_stats.testdata.tsv '
-           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
            '--hm_sumstats {out_harm} '
            '--hm_statfile {out_stats} '
            '--chrom_col chrom '
@@ -67,6 +69,8 @@ def main():
            '--af_vcf_field AF_NFE '
            '--palin_mode infer').format(
            script=hm_script,
+           in_sumstats=in_test_sumstats,
+           in_vcf=in_test_vcf,
            out_harm=out_infer_harm,
            out_stats=out_infer_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
@@ -79,11 +83,11 @@ def main():
     # Test harmonise using `--palin_mode forward` on test data
     out_forward_harm = os.path.join(outdir, 'test.palin_forward.harmonised.tsv')
     out_forward_stats = os.path.join(outdir, 'test.palin_forward.stats.tsv')
-    expected_forward_harm = 'expected_output/test.palin_forward.harmonised.expected.tsv'
-    expected_forward_stats = 'expected_output/test.palin_forward.stats.expected.tsv'
+    expected_forward_harm = 'expected_output/test.palin_forward.harmonised.tsv'
+    expected_forward_stats = 'expected_output/test.palin_forward.stats.tsv'
     cmd = ('{script} '
-           '--sumstats test_data/sum_stats.testdata.tsv '
-           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
            '--hm_sumstats {out_harm} '
            '--hm_statfile {out_stats} '
            '--chrom_col chrom '
@@ -94,6 +98,8 @@ def main():
            '--beta_col beta '
            '--palin_mode forward').format(
            script=hm_script,
+           in_sumstats=in_test_sumstats,
+           in_vcf=in_test_vcf,
            out_harm=out_forward_harm,
            out_stats=out_forward_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
@@ -106,11 +112,11 @@ def main():
     # Test harmonise using `--palin_mode reverse` on test data
     out_reverse_harm = os.path.join(outdir, 'test.palin_reverse.harmonised.tsv')
     out_reverse_stats = os.path.join(outdir, 'test.palin_reverse.stats.tsv')
-    expected_reverse_harm = 'expected_output/test.palin_reverse.harmonised.expected.tsv'
-    expected_reverse_stats = 'expected_output/test.palin_reverse.stats.expected.tsv'
+    expected_reverse_harm = 'expected_output/test.palin_reverse.harmonised.tsv'
+    expected_reverse_stats = 'expected_output/test.palin_reverse.stats.tsv'
     cmd = ('{script} '
-           '--sumstats test_data/sum_stats.testdata.tsv '
-           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
            '--hm_sumstats {out_harm} '
            '--hm_statfile {out_stats} '
            '--chrom_col chrom '
@@ -121,6 +127,8 @@ def main():
            '--beta_col beta '
            '--palin_mode reverse').format(
            script=hm_script,
+           in_sumstats=in_test_sumstats,
+           in_vcf=in_test_vcf,
            out_harm=out_reverse_harm,
            out_stats=out_reverse_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
@@ -133,11 +141,11 @@ def main():
     # Test harmonise using `--palin_mode drop` on test data
     out_drop_harm = os.path.join(outdir, 'test.palin_drop.harmonised.tsv')
     out_drop_stats = os.path.join(outdir, 'test.palin_drop.stats.tsv')
-    expected_drop_harm = 'expected_output/test.palin_drop.harmonised.expected.tsv'
-    expected_drop_stats = 'expected_output/test.palin_drop.stats.expected.tsv'
+    expected_drop_harm = 'expected_output/test.palin_drop.harmonised.tsv'
+    expected_drop_stats = 'expected_output/test.palin_drop.stats.tsv'
     cmd = ('{script} '
-           '--sumstats test_data/sum_stats.testdata.tsv '
-           '--vcf test_data/reference_chr#_vcf.testdata.vcf.gz '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
            '--hm_sumstats {out_harm} '
            '--hm_statfile {out_stats} '
            '--chrom_col chrom '
@@ -148,14 +156,50 @@ def main():
            '--beta_col beta '
            '--palin_mode drop').format(
            script=hm_script,
+           in_sumstats=in_test_sumstats,
+           in_vcf=in_test_vcf,
            out_harm=out_drop_harm,
            out_stats=out_drop_stats)
+    # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
     if ((md5(out_drop_harm) == md5(expected_drop_harm)) and
         (md5(out_drop_stats) == md5(expected_drop_stats))):
         print('Testing --palin_mode drop: PASS')
     else:
         print('Testing --palin_mode drop: FAIL')
+
+    # Test harmonise using `--chrom_map 23=X` with `--palin_mode infer` on test data
+    out_map_harm = os.path.join(outdir, 'test.map.harmonised.tsv')
+    out_map_stats = os.path.join(outdir, 'test.map.stats.tsv')
+    expected_map_harm = 'expected_output/test.map.harmonised.tsv'
+    expected_map_stats = 'expected_output/test.map.stats.tsv'
+    cmd = ('{script} '
+           ' --sumstats {in_sumstats} '
+           '--vcf {in_vcf}.gz '
+           '--hm_sumstats {out_harm} '
+           '--hm_statfile {out_stats} '
+           '--chrom_col chrom '
+           '--pos_col pos '
+           '--effAl_col effect_allele '
+           '--otherAl_col other_allele '
+           '--eaf_col eaf '
+           '--beta_col beta '
+           '--infer_maf_threshold 0.42 '
+           '--af_vcf_field AF_NFE '
+           '--chrom_map 23=X '
+           '--palin_mode infer').format(
+           script=hm_script,
+           in_sumstats=in_test_sumstats,
+           in_vcf=in_test_vcf,
+           out_harm=out_map_harm,
+           out_stats=out_map_stats)
+    # print(cmd)
+    sp.call(cmd, shell=True, stdout=stdout_h)
+    if ((md5(out_map_harm) == md5(expected_map_harm)) and
+        (md5(out_map_stats) == md5(expected_map_stats))):
+        print('Testing --chrom_map 23=X: PASS')
+    else:
+        print('Testing --chrom_map 23=X: FAIL')
 
     # Close stdout handle
     stdout_h.close()

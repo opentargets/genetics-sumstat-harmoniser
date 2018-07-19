@@ -264,6 +264,9 @@ def parse_args():
     other_group.add_argument('--na_rep', metavar="<str>",
                         help=('How to represent NA values in output (default: "")'),
                         type=str, default="")
+    other_group.add_argument('--chrom_map', metavar="<str>",
+                        help=('Map summary stat chromosome names, e.g. `--chrom_map 23=X 24=Y`'),
+                        type=str, nargs='+')
 
     # Parse arguments
     args = parser.parse_args()
@@ -286,6 +289,15 @@ def parse_args():
     if args.palin_mode == 'infer':
         assert all([args.af_vcf_field, args.infer_maf_threshold, args.eaf_col]), \
             "Error: '--af_vcf_field', '--infer_maf_threshold' and '--eaf_col' must be used with '--palin_mode infer'"
+
+    # Parse chrom_map
+    if args.chrom_map:
+        try:
+            chrom_map_d = dict([pair.split('=') for pair in args.chrom_map])
+            args.chrom_map = chrom_map_d
+        except ValueError:
+            assert False, \
+            'Error: --chrom_map must be in the format `--chrom_map 23=X 24=Y`'
 
     return args
 
@@ -582,15 +594,20 @@ def yield_sum_stat_records(inf, sep):
         SumStatRecord
     """
     for row in parse_sum_stats(inf, sep):
-        ss_record = SumStatRecord(row[args.chrom_col],
+
+        # Replace chrom with --chrom_map value
+        chrom = row[args.chrom_col]
+        if args.chrom_map:
+            chrom = args.chrom_map.get(chrom, chrom)
+        # Make sumstat class instance
+        ss_record = SumStatRecord(chrom,
                                   row[args.pos_col],
                                   row[args.otherAl_col],
                                   row[args.effAl_col],
                                   row.get(args.beta_col, None),
                                   row.get(args.or_col, None),
                                   row.get(args.eaf_col, None),
-                                  row
-                                  )
+                                  row)
         yield ss_record
 
 def parse_sum_stats(inf, sep):

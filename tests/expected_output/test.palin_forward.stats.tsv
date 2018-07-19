@@ -3,6 +3,7 @@ hm_code	count	description
 11	2	Forward strand; Flipped orientation; Requires harmonisation
 12	2	Reverse strand; Correct orientation; Already harmonised
 13	2	Reverse strand; Flipped orientation; Requires harmonisation
-15	5	No matching variants in reference VCF; Cannot harmonise
-9	7	Palindromic; Drop palindromic; Will not harmonise
+15	6	No matching variants in reference VCF; Cannot harmonise
+5	5	Palindromic; Assume forward strand; Correct orientation; Already harmonised
+6	2	Palindromic; Assume forward strand; Flipped orientation; Requires harmonisation
 16	1	Multiple matching variants in reference VCF (ambiguous); Cannot harmonise
