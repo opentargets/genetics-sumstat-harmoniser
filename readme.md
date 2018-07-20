@@ -34,9 +34,9 @@ usage: main.py [-h] --sumstats <file> --vcf <file> [--hm_sumstats <file>]
                [--af_vcf_field <str>] [--infer_maf_threshold <float>]
                --chrom_col <str> --pos_col <str> --effAl_col <str>
                --otherAl_col <str> [--beta_col <str>] [--or_col <str>]
-               [--eaf_col <str>] [--only_chrom <str>] [--in_sep <str>]
-               [--out_sep <str>] [--na_rep <str>]
-               [--chrom_map <str> [<str> ...]]
+               [--or_col_lower <str>] [--or_col_upper <str>] [--eaf_col <str>]
+               [--only_chrom <str>] [--in_sep <str>] [--out_sep <str>]
+               [--na_rep <str>] [--chrom_map <str> [<str> ...]]
 
 Summary statistc harmoniser
 
@@ -79,6 +79,8 @@ Input column names:
   --otherAl_col <str>   Other allele column
   --beta_col <str>      beta column
   --or_col <str>        Odds ratio column
+  --or_col_lower <str>  Odds ratio lower CI column
+  --or_col_upper <str>  Odds ratio upper CI column
   --eaf_col <str>       Effect allele frequency column
 
 Other args:
