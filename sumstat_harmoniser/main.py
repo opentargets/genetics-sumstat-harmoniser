@@ -132,6 +132,8 @@ def main():
             out_row["hm_effect_allele"] = ss_rec.hm_effect_al.str() if vcf_rec and ss_rec.is_harmonised else args.na_rep
             out_row["hm_beta"] = ss_rec.beta if ss_rec.beta and ss_rec.is_harmonised else args.na_rep
             out_row["hm_OR"] = ss_rec.oddsr if ss_rec.oddsr and ss_rec.is_harmonised else args.na_rep
+            out_row["hm_OR_lowerCI"] = ss_rec.oddsr_lower if ss_rec.oddsr_lower and ss_rec.is_harmonised else args.na_rep
+            out_row["hm_OR_upperCI"] = ss_rec.oddsr_upper if ss_rec.oddsr_upper and ss_rec.is_harmonised else args.na_rep
             out_row["hm_eaf"] = ss_rec.eaf if ss_rec.eaf and ss_rec.is_harmonised else args.na_rep
             out_row["hm_code"] = ss_rec.hm_code
             # Add other data from summary stat file
@@ -248,6 +250,10 @@ def parse_args():
                         help=('beta column'), type=str)
     incols_group.add_argument('--or_col', metavar="<str>",
                         help=('Odds ratio column'), type=str)
+    incols_group.add_argument('--or_col_lower', metavar="<str>",
+                        help=('Odds ratio lower CI column'), type=str)
+    incols_group.add_argument('--or_col_upper', metavar="<str>",
+                        help=('Odds ratio upper CI column'), type=str)
     incols_group.add_argument('--eaf_col', metavar="<str>",
                         help=('Effect allele frequency column'), type=str)
 
@@ -606,6 +612,8 @@ def yield_sum_stat_records(inf, sep):
                                   row[args.effAl_col],
                                   row.get(args.beta_col, None),
                                   row.get(args.or_col, None),
+                                  row.get(args.or_col_lower, None),
+                                  row.get(args.or_col_upper, None),
                                   row.get(args.eaf_col, None),
                                   row)
         yield ss_record

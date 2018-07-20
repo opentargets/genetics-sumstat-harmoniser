@@ -1,24 +1,24 @@
-rsID	chrom	pos	other_allele	effect_allele	eaf	beta	comment
-rs1	1	1	G	A	0.3	1	"Unambiguous - SNP - correct strand, same alleles = no change"
-rs2	1	2	A	G	0.7	-1	"Unambiguous - SNP - correct strand, flipped alleles = flip beta"
-rs3	1	3	C	T	0.3	1	"Unambiguous - SNP - incorrect strand, same alleles = no change"
-rs4	1	4	T	C	0.7	-1	"Unambiguous - SNP - incorrect strand, flipped alleles = flip beta"
-rs5	1	5	C	A	0.3	1	Ambiguous - SNP = discard
-rs6	1	6	G	GAT	0.2	1	"Unambiguous - indel - correct strand, same alleles = no change"
-rs7	1	7	GAT	G	0.8	-1	"Unambiguous - indel - correct strand, flipped alleles = flip beta"
-rs8	1	8	C	ATC	0.2	1	"Unambiguous - indel - incorrect strand, same alleles = no change"
-rs9	1	9	ATC	C	0.8	-1	"Unambiguous - indel - incorrect strand, flipped alleles = flip beta"
-rs10	1	10	G	GCT	0.2	1	Ambiguous - indel = discard
-rs11	1	11	T	A	0.1	1	"Palindromic - SNP - inferrable, forward strand, same alleles = no change"
-rs12	1	12	T	A	0.9	-1	"Palindromic - SNP - inferrable, reverse strand, flipped alleles = flipped beta"
-rs11	1	11	A	T	0.1	-1	"Palindromic - SNP - inferrable, forward strand, flipped alleles = no change"
-rs12	1	12	A	T	0.9	1	"Palindromic - SNP - inferrable, reverse strand, same alleles = flipped beta"
-rs13	1	13	T	A	0.45	1	Palindromic - SNP - not inferrable = discard
-rs14	1	14	G	A	0.3	1	"Multiallelic - matches unique ALT, correct ref, same alleles = no change"
-rs15	1	15	G	A	0.3	-1	Multiallelic - does not matches unique ALT = discard
-rs16	1	16	D	I	0.2	1	"D,I alleles - alleles not in ATGC = discard"
-rs17	1	17	G	A	0.3	1	Position doesn't exist in reference = discard
-rs18	1	18	A	G	0.3	1	Position has multiple lines in VCF
-rs20	1	20	T	A		1	"Palindromic, forward strand but EAF not known"
-rs21	1	21	T	A	0.1	1	"Palindromic, forward strand but VCF alt AF not known"
-rs22	23	22	G	A	0.3	1	Should be dropped unless `--chrom_map 23=X` is supplied
+rsID	chrom	pos	other_allele	effect_allele	eaf	beta	OR	OR_lowerCI	OR_upperCI	comment
+rs1	1	1	G	A	0.3	1	1.1	1.13	1.08	"Unambiguous - SNP - correct strand, same alleles = no change"
+rs2	1	2	A	G	0.7	-1	0.9090909	0.8849558	0.9259259	"Unambiguous - SNP - correct strand, flipped alleles = flip beta"
+rs3	1	3	C	T	0.3	1	1.1	1.13	1.08	"Unambiguous - SNP - incorrect strand, same alleles = no change"
+rs4	1	4	T	C	0.7	-1	0.9090909	0.8849558	0.9259259	"Unambiguous - SNP - incorrect strand, flipped alleles = flip beta"
+rs5	1	5	C	A	0.3	1	1.1	1.13	1.08	Ambiguous - SNP = discard
+rs6	1	6	G	GAT	0.2	1	1.1	1.13	1.08	"Unambiguous - indel - correct strand, same alleles = no change"
+rs7	1	7	GAT	G	0.8	-1	0.9090909	0.8849558	0.9259259	"Unambiguous - indel - correct strand, flipped alleles = flip beta"
+rs8	1	8	C	ATC	0.2	1	1.1	1.13	1.08	"Unambiguous - indel - incorrect strand, same alleles = no change"
+rs9	1	9	ATC	C	0.8	-1	0.9090909	0.8849558	0.9259259	"Unambiguous - indel - incorrect strand, flipped alleles = flip beta"
+rs10	1	10	G	GCT	0.2	1	1.1	1.13	1.08	Ambiguous - indel = discard
+rs11	1	11	T	A	0.1	1	1.1	1.13	1.08	"Palindromic - SNP - inferrable, forward strand, same alleles = no change"
+rs12	1	12	T	A	0.9	-1	0.9090909	0.8849558	0.9259259	"Palindromic - SNP - inferrable, reverse strand, flipped alleles = flipped beta"
+rs11	1	11	A	T	0.1	-1	0.9090909	0.8849558	0.9259259	"Palindromic - SNP - inferrable, forward strand, flipped alleles = no change"
+rs12	1	12	A	T	0.9	1	1.1	1.13	1.08	"Palindromic - SNP - inferrable, reverse strand, same alleles = flipped beta"
+rs13	1	13	T	A	0.45	1	1.1	1.13	1.08	Palindromic - SNP - not inferrable = discard
+rs14	1	14	G	A	0.3	1	1.1	1.13	1.08	"Multiallelic - matches unique ALT, correct ref, same alleles = no change"
+rs15	1	15	G	A	0.3	-1	0.9090909	0.8849558	0.9259259	Multiallelic - does not matches unique ALT = discard
+rs16	1	16	D	I	0.2	1	1.1	1.13	1.08	"D,I alleles - alleles not in ATGC = discard"
+rs17	1	17	G	A	0.3	1	1.1	1.13	1.08	Position doesn't exist in reference = discard
+rs18	1	18	A	G	0.3	1	1.1	1.13	1.08	Position has multiple lines in VCF
+rs20	1	20	T	A		1	1.1	1.13	1.08	"Palindromic, forward strand but EAF not known"
+rs21	1	21	T	A	0.1	1	1.1	1.13	1.08	"Palindromic, forward strand but VCF alt AF not known"
+rs22	23	22	G	A	0.3	1	1.1	1.13	1.08	Should be dropped unless `--chrom_map 23=X` is supplied

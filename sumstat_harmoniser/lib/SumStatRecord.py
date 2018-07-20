@@ -3,8 +3,8 @@ from lib.Seq import Seq
 class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
-    def __init__(self, chrom, pos, other_al, effect_al, beta, oddsr, eaf,
-                 data):
+    def __init__(self, chrom, pos, other_al, effect_al, beta, oddsr,
+                 oddsr_lower, oddsr_upper, eaf, data):
 
         # Set raw info
         self.chrom = str(chrom)
@@ -14,6 +14,8 @@ class SumStatRecord:
         self.data = data
         self.beta = float(beta) if beta else None
         self.oddsr = float(oddsr) if oddsr else None
+        self.oddsr_lower = float(oddsr_lower) if oddsr_lower else None
+        self.oddsr_upper = float(oddsr_upper) if oddsr_upper else None
 
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
@@ -56,6 +58,10 @@ class SumStatRecord:
         # Flip OR
         if self.oddsr:
             self.oddsr = self.oddsr ** -1
+        if self.oddsr_lower:
+            self.oddsr_lower = self.oddsr_lower ** -1
+        if self.oddsr_upper:
+            self.oddsr_upper = self.oddsr_upper ** -1
         # Switch alleles
         new_effect = self.other_al
         new_other = self.effect_al

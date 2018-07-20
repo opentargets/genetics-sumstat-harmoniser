@@ -17,6 +17,7 @@ def main():
     hm_script = '../bin/sumstat_harmoniser'
     stdout_log = 'output/stdout.txt'
     outdir = 'output'
+    check_output = True
 
     # Make output direcctory
     if not os.path.exists(outdir):
@@ -44,10 +45,11 @@ def main():
             in_vcf=in_test_vcf,
             out_file=out_strand_counts)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if md5(out_strand_counts) == md5(expected_strand_counts):
-        print('Testing --strand_counts: PASS')
-    else:
-        print('Testing --strand_counts: FAIL')
+    if check_output:
+        if md5(out_strand_counts) == md5(expected_strand_counts):
+            print('Testing --strand_counts: PASS')
+        else:
+            print('Testing --strand_counts: FAIL')
 
     # Test harmonise using `--palin_mode infer` on test data
     out_infer_harm = os.path.join(outdir, 'test.palin_infer.harmonised.tsv')
@@ -65,6 +67,9 @@ def main():
            '--otherAl_col other_allele '
            '--eaf_col eaf '
            '--beta_col beta '
+           '--or_col OR '
+           '--or_col_lower OR_lowerCI '
+           '--or_col_upper OR_upperCI '
            '--infer_maf_threshold 0.42 '
            '--af_vcf_field AF_NFE '
            '--palin_mode infer').format(
@@ -74,11 +79,12 @@ def main():
            out_harm=out_infer_harm,
            out_stats=out_infer_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if ((md5(out_infer_harm) == md5(expected_infer_harm)) and
-        (md5(out_infer_stats) == md5(expected_infer_stats))):
-        print('Testing --palin_mode infer: PASS')
-    else:
-        print('Testing --palin_mode infer: FAIL')
+    if check_output:
+        if ((md5(out_infer_harm) == md5(expected_infer_harm)) and
+            (md5(out_infer_stats) == md5(expected_infer_stats))):
+            print('Testing --palin_mode infer: PASS')
+        else:
+            print('Testing --palin_mode infer: FAIL')
 
     # Test harmonise using `--palin_mode forward` on test data
     out_forward_harm = os.path.join(outdir, 'test.palin_forward.harmonised.tsv')
@@ -96,6 +102,9 @@ def main():
            '--otherAl_col other_allele '
            '--eaf_col eaf '
            '--beta_col beta '
+           '--or_col OR '
+           '--or_col_lower OR_lowerCI '
+           '--or_col_upper OR_upperCI '
            '--palin_mode forward').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -103,11 +112,12 @@ def main():
            out_harm=out_forward_harm,
            out_stats=out_forward_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if ((md5(out_forward_harm) == md5(expected_forward_harm)) and
-        (md5(out_forward_stats) == md5(expected_forward_stats))):
-        print('Testing --palin_mode forward: PASS')
-    else:
-        print('Testing --palin_mode forward: FAIL')
+    if check_output:
+        if ((md5(out_forward_harm) == md5(expected_forward_harm)) and
+            (md5(out_forward_stats) == md5(expected_forward_stats))):
+            print('Testing --palin_mode forward: PASS')
+        else:
+            print('Testing --palin_mode forward: FAIL')
 
     # Test harmonise using `--palin_mode reverse` on test data
     out_reverse_harm = os.path.join(outdir, 'test.palin_reverse.harmonised.tsv')
@@ -125,6 +135,9 @@ def main():
            '--otherAl_col other_allele '
            '--eaf_col eaf '
            '--beta_col beta '
+           '--or_col OR '
+           '--or_col_lower OR_lowerCI '
+           '--or_col_upper OR_upperCI '
            '--palin_mode reverse').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -132,11 +145,12 @@ def main():
            out_harm=out_reverse_harm,
            out_stats=out_reverse_stats)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if ((md5(out_reverse_harm) == md5(expected_reverse_harm)) and
-        (md5(out_reverse_stats) == md5(expected_reverse_stats))):
-        print('Testing --palin_mode reverse: PASS')
-    else:
-        print('Testing --palin_mode reverse: FAIL')
+    if check_output:
+        if ((md5(out_reverse_harm) == md5(expected_reverse_harm)) and
+            (md5(out_reverse_stats) == md5(expected_reverse_stats))):
+            print('Testing --palin_mode reverse: PASS')
+        else:
+            print('Testing --palin_mode reverse: FAIL')
 
     # Test harmonise using `--palin_mode drop` on test data
     out_drop_harm = os.path.join(outdir, 'test.palin_drop.harmonised.tsv')
@@ -154,6 +168,9 @@ def main():
            '--otherAl_col other_allele '
            '--eaf_col eaf '
            '--beta_col beta '
+           '--or_col OR '
+           '--or_col_lower OR_lowerCI '
+           '--or_col_upper OR_upperCI '
            '--palin_mode drop').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -162,11 +179,12 @@ def main():
            out_stats=out_drop_stats)
     # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if ((md5(out_drop_harm) == md5(expected_drop_harm)) and
-        (md5(out_drop_stats) == md5(expected_drop_stats))):
-        print('Testing --palin_mode drop: PASS')
-    else:
-        print('Testing --palin_mode drop: FAIL')
+    if check_output:
+        if ((md5(out_drop_harm) == md5(expected_drop_harm)) and
+            (md5(out_drop_stats) == md5(expected_drop_stats))):
+            print('Testing --palin_mode drop: PASS')
+        else:
+            print('Testing --palin_mode drop: FAIL')
 
     # Test harmonise using `--chrom_map 23=X` with `--palin_mode infer` on test data
     out_map_harm = os.path.join(outdir, 'test.map.harmonised.tsv')
@@ -184,6 +202,9 @@ def main():
            '--otherAl_col other_allele '
            '--eaf_col eaf '
            '--beta_col beta '
+           '--or_col OR '
+           '--or_col_lower OR_lowerCI '
+           '--or_col_upper OR_upperCI '
            '--infer_maf_threshold 0.42 '
            '--af_vcf_field AF_NFE '
            '--chrom_map 23=X '
@@ -195,11 +216,12 @@ def main():
            out_stats=out_map_stats)
     # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
-    if ((md5(out_map_harm) == md5(expected_map_harm)) and
-        (md5(out_map_stats) == md5(expected_map_stats))):
-        print('Testing --chrom_map 23=X: PASS')
-    else:
-        print('Testing --chrom_map 23=X: FAIL')
+    if check_output:
+        if ((md5(out_map_harm) == md5(expected_map_harm)) and
+            (md5(out_map_stats) == md5(expected_map_stats))):
+            print('Testing --chrom_map 23=X: PASS')
+        else:
+            print('Testing --chrom_map 23=X: FAIL')
 
     # Close stdout handle
     stdout_h.close()
