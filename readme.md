@@ -9,11 +9,19 @@ Scripts for harmonising GWAS summary stats against a reference VCF sitelist. See
 - [HTSlib](http://www.htslib.org/download/) (for tabix)
 
 ```
+# Download
+git clone https://github.com/opentargets/sumstat_harmoniser.git
+cd sumstat_harmoniser
+
 # Install dependencies into isolated environment
 conda env create -n sumstat_harmoniser --file environment.yaml
 
 # Activate environment
 source activate sumstat_harmoniser
+
+# Run tests
+cd tests
+./run_tests.py
 ```
 
 #### Usage
