@@ -1,30 +1,7 @@
 GWAS summary statistics harmoniser
 ==================================
 
-Work in progress. Todo:
-- (✓) Add option to assume forward/reverse strand/inder/drop palindromic.
-- (✓) Keep all variants in the output:
-  - (✓) Add encoding of what was done to each variant
-  - (✓) Add condition on code == None
-  - (✓) Remove all `continue` statements
-  - (✓) Get hamronised rsid from vcf
-- (✓) Remove infer_strand
-- (✓) Add option to use odds ratio (OR), rather than betas
-  - (✓) Remove requirement for beta
-  - (✓) Add option for OR and integrate with SumStat class
-  - (✓) Assert that either beta or OR is provided
-- (✓) Remove requirement for allele frequency
-- (✓) Remove allele frequency filter
-- (✓) Add preliminary check of forward/reverse stats
-- (✓) Finalise output format
-- (✓) Tests
-  - (✓) Automate test output check
-  - (✓) Add test for different parameters
-  - (✓) Test preliminary run through
-- (✓) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
-- ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
-  - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
-  - ( ) Load required lines from reference VCF into memory
+Scripts for harmonising GWAS summary stats against reference VCF sitelist. See [flowchart](flowchart_v2.pdf) for implementation details.
 
 #### Requirements
 
@@ -40,8 +17,6 @@ source activate sumstat_harmoniser
 ```
 
 #### Usage
-
-Command line arguments can be viewed with `python sumstat_harmoniser.py --help`
 
 ```
 $ bin/sumstat_harmoniser --help
@@ -107,3 +82,80 @@ Other args:
                         Map summary stat chromosome names, e.g. `--chrom_map
                         23=X 24=Y`
 ```
+
+#### Examples
+
+```
+# Count number of variants that are forward strand/reverse strand/palindromic,
+# without harmonisation
+
+bin/sumstat_harmoniser \
+  --sumstats {input sumstats} \
+  --vcf {reference vcf} \
+  --vcf {reference vcf} \
+  --chrom_col {chrom name column} \
+  --pos_col {bp position column} \
+  --effAl_col {effect allele column} \
+  --otherAl_col {non effect allele column} \
+  --stand_counts {output count file}
+
+# Harmonise variants whilst inferring strand of palindromic variants (requires
+# known effect allele and VCF alt allele frequencies)
+
+bin/sumstat_harmoniser \
+  --sumstats {input sumstats} \
+  --vcf {reference vcf} \
+  --vcf {reference vcf} \
+  --chrom_col {chrom name column} \
+  --pos_col {bp position column} \
+  --effAl_col {effect allele column} \
+  --otherAl_col {non effect allele column} \
+  --beta_col {beta column} \
+  --palin_mode infer \
+  --eaf_col {effect allele freq column} \
+  --af_vcf_field {alt allele freq VCF info field} \
+  --infer_maf_threshold {freq threshold for inference} \
+  --hm_sumstats {output harmonised sumstats} \
+  --hm_statfile {output outcome code stats file}
+
+# Harmonise variants whilst assuming palindromic variants are on forward strand
+
+bin/sumstat_harmoniser \
+  --sumstats {input sumstats} \
+  --vcf {reference vcf} \
+  --vcf {reference vcf} \
+  --chrom_col {chrom name column} \
+  --pos_col {bp position column} \
+  --effAl_col {effect allele column} \
+  --otherAl_col {non effect allele column} \
+  --beta_col {beta column} \
+  --palin_mode forward \
+  --hm_sumstats {output harmonised sumstats} \
+  --hm_statfile {output outcome code stats file}
+```
+
+#### Todo
+
+- (✓) Add option to assume forward/reverse strand/inder/drop palindromic.
+- (✓) Keep all variants in the output:
+  - (✓) Add encoding of what was done to each variant
+  - (✓) Add condition on code == None
+  - (✓) Remove all `continue` statements
+  - (✓) Get hamronised rsid from vcf
+- (✓) Remove infer_strand
+- (✓) Add option to use odds ratio (OR), rather than betas
+  - (✓) Remove requirement for beta
+  - (✓) Add option for OR and integrate with SumStat class
+  - (✓) Assert that either beta or OR is provided
+- (✓) Remove requirement for allele frequency
+- (✓) Remove allele frequency filter
+- (✓) Add preliminary check of forward/reverse stats
+- (✓) Finalise output format
+- (✓) Tests
+  - (✓) Automate test output check
+  - (✓) Add test for different parameters
+  - (✓) Test preliminary run through
+- (✓) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
+- ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
+  - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
+  - ( ) Load required lines from reference VCF into memory
