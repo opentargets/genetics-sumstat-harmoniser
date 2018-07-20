@@ -92,7 +92,6 @@ Other args:
 bin/sumstat_harmoniser \
   --sumstats {input sumstats} \
   --vcf {reference vcf} \
-  --vcf {reference vcf} \
   --chrom_col {chrom name column} \
   --pos_col {bp position column} \
   --effAl_col {effect allele column} \
@@ -104,7 +103,6 @@ bin/sumstat_harmoniser \
 
 bin/sumstat_harmoniser \
   --sumstats {input sumstats} \
-  --vcf {reference vcf} \
   --vcf {reference vcf} \
   --chrom_col {chrom name column} \
   --pos_col {bp position column} \
@@ -122,7 +120,6 @@ bin/sumstat_harmoniser \
 
 bin/sumstat_harmoniser \
   --sumstats {input sumstats} \
-  --vcf {reference vcf} \
   --vcf {reference vcf} \
   --chrom_col {chrom name column} \
   --pos_col {bp position column} \
