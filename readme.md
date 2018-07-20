@@ -1,7 +1,7 @@
 GWAS summary statistics harmoniser
 ==================================
 
-Scripts for harmonising GWAS summary stats against reference VCF sitelist. See [flowchart](flowchart_v2.pdf) for implementation details.
+Scripts for harmonising GWAS summary stats against a reference VCF sitelist. See [flowchart](flowchart_v2.pdf) for implementation details.
 
 #### Requirements
 
