@@ -6,3 +6,4 @@ hm_code	count	description
 15	6	No matching variants in reference VCF; Cannot harmonise
 9	7	Palindromic; Drop palindromic; Will not harmonise
 16	1	Multiple matching variants in reference VCF (ambiguous); Cannot harmonise
+14	2	Required fields are not known; Cannot harmonise

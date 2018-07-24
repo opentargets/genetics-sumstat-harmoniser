@@ -7,10 +7,10 @@ class SumStatRecord:
                  oddsr_lower, oddsr_upper, eaf, data):
 
         # Set raw info
-        self.chrom = str(chrom)
-        self.pos = int(pos)
-        self.other_al = Seq(other_al)
-        self.effect_al = Seq(effect_al)
+        self.chrom = chrom
+        self.pos = pos
+        self.other_al = other_al
+        self.effect_al = effect_al
         self.data = data
         self.beta = float(beta) if beta else None
         self.oddsr = float(oddsr) if oddsr else None
@@ -24,13 +24,6 @@ class SumStatRecord:
         else:
             self.eaf = None
 
-        # Assert that chromosome is permissible
-        # permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
-        # assert set([self.chrom]).issubset(permissible)
-
-        # Assert that other and effect alleles are different
-        assert self.other_al.str() != self.effect_al.str()
-
         # Set harmonised values
         self.hm_rsid = None
         self.hm_chrom = None
@@ -39,6 +32,31 @@ class SumStatRecord:
         self.hm_effect_al = None
         self.is_harmonised = False
         self.hm_code = None
+
+    def validate_ssrec(self):
+        ''' Ensures that chrom, pos, other_al, effect_al are of correct type
+            Return code which will either be:
+                - None if successful,
+                - 14 if unsuccessful
+        '''
+        try:
+            # Coerce types
+            self.chrom = str(self.chrom)
+            self.pos = int(self.pos)
+            self.other_al = Seq(self.other_al)
+            self.effect_al = Seq(self.effect_al)
+
+            # Assert that other and effect alleles are different
+            assert self.other_al.str() != self.effect_al.str()
+
+            # Assert that chromosome is permissible
+            # permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
+            # assert set([self.chrom]).issubset(permissible)
+
+            return None
+        except:
+            return 14
+
 
     def revcomp_alleles(self):
         """ Reverse complement both the other and effect alleles.

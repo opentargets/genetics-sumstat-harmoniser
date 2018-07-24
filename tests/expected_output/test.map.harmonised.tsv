@@ -21,4 +21,6 @@ hm_varid	hm_rsid	hm_chrom	hm_pos	hm_other_allele	hm_effect_allele	hm_beta	hm_OR	
 											15	rs18	1	18	A	G	0.3	1	1.1	1.13	1.08	Position has multiple lines in VCF
 											17	rs20	1	20	T	A		1	1.1	1.13	1.08	"Palindromic, forward strand but EAF not known"
 											17	rs21	1	21	T	A	0.1	1	1.1	1.13	1.08	"Palindromic, forward strand but VCF alt AF not known"
+											14	rs23	1	NA	G	A	0.3	1	1.1	1.13	1.08	"Missing position, cannot harmonise"
+											14	rs24	1	24	X	A	0.3	1	1.1	1.13	1.08	"Invalid alleles, cannot harmonise"
 X_22_G_A	rs22	X	22	G	A	1.0	1.1	1.13	1.08	0.3	10	rs22	23	22	G	A	0.3	1	1.1	1.13	1.08	Should be dropped unless `--chrom_map 23=X` is supplied

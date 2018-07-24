@@ -7,3 +7,4 @@ hm_code	count	description
 5	5	Palindromic; Assume forward strand; Correct orientation; Already harmonised
 6	2	Palindromic; Assume forward strand; Flipped orientation; Requires harmonisation
 16	1	Multiple matching variants in reference VCF (ambiguous); Cannot harmonise
+14	2	Required fields are not known; Cannot harmonise

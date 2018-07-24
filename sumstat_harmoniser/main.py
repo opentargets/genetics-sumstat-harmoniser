@@ -40,6 +40,12 @@ def main():
         if args.only_chrom and not args.only_chrom == ss_rec.chrom:
             continue
 
+        # Validate summary stat record
+        ret_code = ss_rec.validate_ssrec()
+        if ret_code:
+            ss_rec.hm_code = ret_code
+            strand_counter['Invalid variant for harmonisation'] += 1
+
         # # DEBUG print progress
         # if counter % 1000 == 0:
         #     print(counter + 1)
@@ -48,36 +54,39 @@ def main():
         # Load and filter VCF records ------------------------------------------
         #
 
-        # Get VCF reference variants for this record
-        vcf_recs = get_vcf_records(
-                    args.vcf.replace("#", ss_rec.chrom),
-                    ss_rec.chrom,
-                    ss_rec.pos)
+        # Skip rows that have code 14 (fail validation)
+        if not ss_rec.hm_code:
 
-        # Extract the VCF record that matches the summary stat record
-        vcf_rec, ret_code = exract_matching_record_from_vcf_records(ss_rec,
-                                                                    vcf_recs)
+            # Get VCF reference variants for this record
+            vcf_recs = get_vcf_records(
+                        args.vcf.replace("#", ss_rec.chrom),
+                        ss_rec.chrom,
+                        ss_rec.pos)
 
-        # Set return code when vcf_rec was not found
-        if ret_code:
-            ss_rec.hm_code = ret_code
+            # Extract the VCF record that matches the summary stat record
+            vcf_rec, ret_code = exract_matching_record_from_vcf_records(
+                ss_rec, vcf_recs)
 
-        # If vcf record was found, extract some required values
-        if vcf_rec:
-            # Get alt allele
-            vcf_alt = vcf_rec.alt_als[0]
-            # Set variant information from VCF file
-            ss_rec.hm_rsid = vcf_rec.id
-            ss_rec.hm_chrom = vcf_rec.chrom
-            ss_rec.hm_pos = vcf_rec.pos
-            ss_rec.hm_other_al = vcf_rec.ref_al
-            ss_rec.hm_effect_al = vcf_alt
+            # Set return code when vcf_rec was not found
+            if ret_code:
+                ss_rec.hm_code = ret_code
+
+            # If vcf record was found, extract some required values
+            if vcf_rec:
+                # Get alt allele
+                vcf_alt = vcf_rec.alt_als[0]
+                # Set variant information from VCF file
+                ss_rec.hm_rsid = vcf_rec.id
+                ss_rec.hm_chrom = vcf_rec.chrom
+                ss_rec.hm_pos = vcf_rec.pos
+                ss_rec.hm_other_al = vcf_rec.ref_al
+                ss_rec.hm_effect_al = vcf_alt
 
         #
         # Harmonise variants ---------------------------------------------------
         #
 
-        # Skip if harmonisation code exists (no VCF record exists)
+        # Skip if harmonisation code exists (no VCF record exists or code 14)
         if ss_rec.hm_code:
             strand_counter['No VCF record found'] += 1
 

@@ -21,4 +21,6 @@ rs17	1	17	G	A	0.3	1	1.1	1.13	1.08	Position doesn't exist in reference = discard
 rs18	1	18	A	G	0.3	1	1.1	1.13	1.08	Position has multiple lines in VCF
 rs20	1	20	T	A		1	1.1	1.13	1.08	"Palindromic, forward strand but EAF not known"
 rs21	1	21	T	A	0.1	1	1.1	1.13	1.08	"Palindromic, forward strand but VCF alt AF not known"
+rs23	1	NA	G	A	0.3	1	1.1	1.13	1.08	"Missing position, cannot harmonise"
+rs24	1	24	X	A	0.3	1	1.1	1.13	1.08	"Invalid alleles, cannot harmonise"
 rs22	23	22	G	A	0.3	1	1.1	1.13	1.08	Should be dropped unless `--chrom_map 23=X` is supplied
