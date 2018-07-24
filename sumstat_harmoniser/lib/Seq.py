@@ -5,7 +5,7 @@ class Seq:
     """
     def __init__(self, seq):
         self.seq = str(seq).upper()
-        assert set(list(self.seq)).issubset(set(["A", "T", "G", "C", "D", "I", "N"]))
+        assert set(list(self.seq)).issubset(set(["A", "T", "G", "C", "D", "I", "N", "."]))
 
     def __repr__(self):
         return str(self.seq)
