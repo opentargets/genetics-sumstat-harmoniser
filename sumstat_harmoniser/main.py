@@ -82,6 +82,9 @@ def main():
                 ss_rec.hm_other_al = vcf_rec.ref_al
                 ss_rec.hm_effect_al = vcf_alt
 
+        else:
+            vcf_rec = None
+
         #
         # Harmonise variants ---------------------------------------------------
         #
@@ -166,7 +169,7 @@ def main():
     # Write strand_count stats to file
     if args.strand_counts:
         with open_gzip(args.strand_counts, rw='wb') as out_h:
-            for key in strand_counter:
+            for key in sorted(strand_counter.keys()):
                 out_h.write('{0}\t{1}\n'.format(key, strand_counter[key]).encode('utf-8'))
 
     # Write outcome code stats to file
@@ -192,7 +195,7 @@ def main():
     if args.hm_statfile:
         with open_gzip(args.hm_statfile, 'wb') as out_h:
             out_h.write('hm_code\tcount\tdescription\n'.encode('utf-8'))
-            for key in code_counter:
+            for key in sorted(code_counter.keys()):
                 out_h.write('{0}\t{1}\t{2}\n'.format(key,
                                                      code_counter[key],
                                                      code_table[key]).encode('utf-8') )

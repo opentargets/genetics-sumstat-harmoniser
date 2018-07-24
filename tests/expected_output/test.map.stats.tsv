@@ -1,14 +1,14 @@
 hm_code	count	description
+1	1	Palindromic; Infer strand; Forward strand; Correct orientation; Already harmonised
+2	1	Palindromic; Infer strand; Forward strand; Flipped orientation; Requires harmonisation
+3	1	Palindromic; Infer strand; Reverse strand; Correct orientation; Already harmonised
+4	1	Palindromic; Infer strand; Reverse strand; Flipped orientation; Requires harmonisation
 10	4	Forward strand; Correct orientation; Already harmonised
 11	2	Forward strand; Flipped orientation; Requires harmonisation
 12	2	Reverse strand; Correct orientation; Already harmonised
 13	2	Reverse strand; Flipped orientation; Requires harmonisation
+14	2	Required fields are not known; Cannot harmonise
 15	5	No matching variants in reference VCF; Cannot harmonise
-1	1	Palindromic; Infer strand; Forward strand; Correct orientation; Already harmonised
-4	1	Palindromic; Infer strand; Reverse strand; Flipped orientation; Requires harmonisation
-2	1	Palindromic; Infer strand; Forward strand; Flipped orientation; Requires harmonisation
-3	1	Palindromic; Infer strand; Reverse strand; Correct orientation; Already harmonised
-18	1	Palindromic; Infer strand; EAF < --maf_palin_threshold; Will not harmonise
 16	1	Multiple matching variants in reference VCF (ambiguous); Cannot harmonise
 17	2	Palindromic; Infer strand; EAF or reference VCF AF not known; Cannot harmonise
-14	2	Required fields are not known; Cannot harmonise
+18	1	Palindromic; Infer strand; EAF < --maf_palin_threshold; Will not harmonise
