@@ -44,6 +44,7 @@ def main():
             in_sumstats=in_test_sumstats,
             in_vcf=in_test_vcf,
             out_file=out_strand_counts)
+    # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
     if check_output:
         if md5(out_strand_counts) == md5(expected_strand_counts):

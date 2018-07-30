@@ -7,8 +7,8 @@ hm_code	count	description
 11	2	Forward strand; Flipped orientation; Requires harmonisation
 12	2	Reverse strand; Correct orientation; Already harmonised
 13	2	Reverse strand; Flipped orientation; Requires harmonisation
-14	2	Required fields are not known; Cannot harmonise
-15	6	No matching variants in reference VCF; Cannot harmonise
+14	3	Required fields are not known; Cannot harmonise
+15	5	No matching variants in reference VCF; Cannot harmonise
 16	1	Multiple matching variants in reference VCF (ambiguous); Cannot harmonise
 17	2	Palindromic; Infer strand; EAF or reference VCF AF not known; Cannot harmonise
 18	1	Palindromic; Infer strand; EAF < --maf_palin_threshold; Will not harmonise

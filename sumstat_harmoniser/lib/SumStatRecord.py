@@ -39,24 +39,24 @@ class SumStatRecord:
                 - None if successful,
                 - 14 if unsuccessful
         '''
+        # Coerce types
+        self.chrom = str(self.chrom)
+        self.other_al = Seq(self.other_al)
+        self.effect_al = Seq(self.effect_al)
         try:
-            # Coerce types
-            self.chrom = str(self.chrom)
             self.pos = int(self.pos)
-            self.other_al = Seq(self.other_al)
-            self.effect_al = Seq(self.effect_al)
-
-            # Assert that other and effect alleles are different
-            assert self.other_al.str() != self.effect_al.str()
-
-            # Assert that chromosome is permissible
-            # permissible = set([str(x) for x in list(range(1, 23)) + ["X", "Y", "MT"]])
-            # assert set([self.chrom]).issubset(permissible)
-
-            return None
-        except:
+        except ValueError:
             return 14
 
+        # Assert that other and effect alleles are different
+        if self.other_al.str() == self.effect_al.str():
+            return 14
+
+        # Assert that unkown nucleotides don't exist
+        if 'N' in self.other_al.str() or 'N' in self.effect_al.str():
+            return 14
+
+        return None
 
     def revcomp_alleles(self):
         """ Reverse complement both the other and effect alleles.

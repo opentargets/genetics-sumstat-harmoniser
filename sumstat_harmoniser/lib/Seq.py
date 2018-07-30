@@ -4,8 +4,12 @@ class Seq:
         seq (str): dna sequence
     """
     def __init__(self, seq):
-        self.seq = str(seq).upper()
-        assert set(list(self.seq)).issubset(set(["A", "T", "G", "C", "D", "I", "N", "."]))
+        # Make sure that nucleotides are ATGC or N
+        permissable_nucl = set(['A', 'T', 'G', 'C'])
+        seq_list = list(str(seq).upper())
+        seq_list_clean = [nucl if nucl in permissable_nucl else 'N' for nucl in seq_list]
+        seq_str = ''.join(seq_list_clean)
+        self.seq = seq_str
 
     def __repr__(self):
         return str(self.seq)
