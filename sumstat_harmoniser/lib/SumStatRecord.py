@@ -106,3 +106,14 @@ class SumStatRecord:
                           "  odds ratio   : " + str(self.oddsr),
                           "  EAF          : " + str(self.eaf)
                           ])
+
+
+def isFloat(value):
+    if value is not None:
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+    else:
+        return False
