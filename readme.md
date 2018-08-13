@@ -36,7 +36,8 @@ usage: main.py [-h] --sumstats <file> --vcf <file> [--hm_sumstats <file>]
                --otherAl_col <str> [--beta_col <str>] [--or_col <str>]
                [--or_col_lower <str>] [--or_col_upper <str>] [--eaf_col <str>]
                [--only_chrom <str>] [--in_sep <str>] [--out_sep <str>]
-               [--na_rep <str>] [--chrom_map <str> [<str> ...]]
+               [--na_rep_in <str>] [--na_rep_out <str>]
+               [--chrom_map <str> [<str> ...]]
 
 Summary statistc harmoniser
 
@@ -87,7 +88,8 @@ Other args:
   --only_chrom <str>    Only process this chromosome
   --in_sep <str>        Input file column separator (default: tab)
   --out_sep <str>       Output file column separator (default: tab)
-  --na_rep <str>        How to represent NA values in output (default: "")
+  --na_rep_in <str>     How NA are represented in the input file (default: "")
+  --na_rep_out <str>    How to represent NA values in output (default: "")
   --chrom_map <str> [<str> ...]
                         Map summary stat chromosome names, e.g. `--chrom_map
                         23=X 24=Y`
