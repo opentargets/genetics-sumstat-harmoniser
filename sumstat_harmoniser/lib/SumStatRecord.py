@@ -45,7 +45,7 @@ class SumStatRecord:
         self.effect_al = Seq(self.effect_al)
         try:
             self.pos = int(self.pos)
-        except ValueError:
+        except (ValueError, TypeError) as e:
             return 14
 
         # Assert that other and effect alleles are different
@@ -76,10 +76,11 @@ class SumStatRecord:
         # Flip OR
         if self.oddsr:
             self.oddsr = self.oddsr ** -1
-        if self.oddsr_lower:
-            self.oddsr_lower = self.oddsr_lower ** -1
-        if self.oddsr_upper:
-            self.oddsr_upper = self.oddsr_upper ** -1
+        if self.oddsr_lower and self.oddsr_upper:
+            unharmonised_lower = self.oddsr_lower
+            unharmonised_upper = self.oddsr_upper
+            self.oddsr_lower = unharmonised_upper ** -1
+            self.oddsr_upper = unharmonised_lower ** -1
         # Switch alleles
         new_effect = self.other_al
         new_other = self.effect_al

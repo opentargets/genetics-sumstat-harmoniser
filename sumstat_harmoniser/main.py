@@ -136,21 +136,22 @@ def main():
 
             # Add harmonised other allele, effect allele, eaf, beta, or to output
             out_row = OrderedDict()
-            out_row["hm_varid"] = vcf_rec.hgvs()[0] if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_rsid"] = ss_rec.hm_rsid if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_chrom"] = ss_rec.hm_chrom if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_pos"] = ss_rec.hm_pos if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_other_allele"] = ss_rec.hm_other_al.str() if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_effect_allele"] = ss_rec.hm_effect_al.str() if vcf_rec and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_beta"] = ss_rec.beta if ss_rec.beta and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_OR"] = ss_rec.oddsr if ss_rec.oddsr and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_OR_lowerCI"] = ss_rec.oddsr_lower if ss_rec.oddsr_lower and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_OR_upperCI"] = ss_rec.oddsr_upper if ss_rec.oddsr_upper and ss_rec.is_harmonised else args.na_rep
-            out_row["hm_eaf"] = ss_rec.eaf if ss_rec.eaf and ss_rec.is_harmonised else args.na_rep
+            out_row["hm_varid"] = vcf_rec.hgvs()[0] if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_rsid"] = ss_rec.hm_rsid if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_chrom"] = ss_rec.hm_chrom if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_pos"] = ss_rec.hm_pos if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_other_allele"] = ss_rec.hm_other_al.str() if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_effect_allele"] = ss_rec.hm_effect_al.str() if vcf_rec and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_beta"] = ss_rec.beta if ss_rec.beta and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_OR"] = ss_rec.oddsr if ss_rec.oddsr and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_OR_lowerCI"] = ss_rec.oddsr_lower if ss_rec.oddsr_lower and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_OR_upperCI"] = ss_rec.oddsr_upper if ss_rec.oddsr_upper and ss_rec.is_harmonised else args.na_rep_out
+            out_row["hm_eaf"] = ss_rec.eaf if ss_rec.eaf and ss_rec.is_harmonised else args.na_rep_out
             out_row["hm_code"] = ss_rec.hm_code
             # Add other data from summary stat file
             for key in ss_rec.data:
-                out_row[key] = str(ss_rec.data[key])
+                value = ss_rec.data[key] if ss_rec.data[key] else args.na_rep_out
+                out_row[key] = str(value)
 
             # Write header
             if not header_written:
@@ -279,7 +280,10 @@ def parse_args():
     other_group.add_argument('--out_sep', metavar="<str>",
                         help=('Output file column separator (default: tab)'),
                         type=str, default="\t")
-    other_group.add_argument('--na_rep', metavar="<str>",
+    other_group.add_argument('--na_rep_in', metavar="<str>",
+                        help=('How NA  are represented in the input file (default: "")'),
+                        type=str, default="")
+    other_group.add_argument('--na_rep_out', metavar="<str>",
                         help=('How to represent NA values in output (default: "")'),
                         type=str, default="")
     other_group.add_argument('--chrom_map', metavar="<str>",
@@ -307,6 +311,11 @@ def parse_args():
     if args.palin_mode == 'infer':
         assert all([args.af_vcf_field, args.infer_maf_threshold, args.eaf_col]), \
             "Error: '--af_vcf_field', '--infer_maf_threshold' and '--eaf_col' must be used with '--palin_mode infer'"
+
+    # Assert that OR_lower and OR_upper are used both present if any
+    if any([args.or_col_lower, args.or_col_upper]):
+        assert all([args.or_col_lower, args.or_col_upper]), \
+        "Error: '--or_col_lower' and '--or_col_upper' must be used together"
 
     # Parse chrom_map
     if args.chrom_map:
@@ -643,6 +652,10 @@ def parse_sum_stats(inf, sep):
         header = in_handle.readline().decode("utf-8").rstrip().split(sep)
         for line in in_handle:
             values = line.decode("utf-8").rstrip().split(sep)
+            # Replace any na_rep_in values with None
+            values = [value if value != args.na_rep_in else None
+                      for value in values]
+            # Check we have the correct number of elements
             assert(len(values) == len(header))
             yield OrderedDict(zip(header, values))
 
