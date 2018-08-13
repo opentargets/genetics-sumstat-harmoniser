@@ -83,6 +83,7 @@ def main():
            in_vcf=in_test_vcf,
            out_harm=out_infer_harm,
            out_stats=out_infer_stats)
+    # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
     if check_output:
         if ((md5(out_infer_harm) == md5(expected_infer_harm)) and

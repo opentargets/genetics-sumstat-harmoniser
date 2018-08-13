@@ -649,7 +649,14 @@ def parse_sum_stats(inf, sep):
         OrderedDict: {column: value}
     """
     with open_gzip(inf, "rb") as in_handle:
+        # Get header
         header = in_handle.readline().decode("utf-8").rstrip().split(sep)
+        # Assert that all column arguments are contained in header
+        for arg, value in args.__dict__.items():
+            if '_col' in arg and args.__dict__[arg]:
+                assert value in header, \
+                'Error: --{0} {1} not found in input header'.format(arg, value)
+        # Iterate over lines
         for line in in_handle:
             values = line.decode("utf-8").rstrip().split(sep)
             # Replace any na_rep_in values with None
