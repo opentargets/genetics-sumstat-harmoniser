@@ -145,6 +145,7 @@ bin/sumstat_harmoniser \
 
 #### Todo
 
+- ( ) Check that tbi file exists for the VCF
 - ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
   - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
   - ( ) Load required lines from reference VCF into memory
