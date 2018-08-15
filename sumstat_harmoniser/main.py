@@ -663,7 +663,7 @@ def parse_sum_stats(inf, sep):
             values = [value if value != args.na_rep_in else None
                       for value in values]
             # Check we have the correct number of elements
-            assert(len(values) == len(header))
+            assert len(values) == len(header), 'Error: column length ({0}) does not match header length ({1})'.format(len(values), len(header))
             yield OrderedDict(zip(header, values))
 
 def open_gzip(inf, rw="rb"):
