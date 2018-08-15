@@ -13,9 +13,9 @@ class SumStatRecord:
         self.effect_al = effect_al
         self.data = data
         self.beta = float(beta) if beta else None
-        self.oddsr = float(oddsr) if oddsr else None
-        self.oddsr_lower = float(oddsr_lower) if oddsr_lower else None
-        self.oddsr_upper = float(oddsr_upper) if oddsr_upper else None
+        self.oddsr = safe_float(oddsr) if oddsr else None
+        self.oddsr_lower = safe_float(oddsr_lower) if oddsr_lower else None
+        self.oddsr_upper = safe_float(oddsr_upper) if oddsr_upper else None
 
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
@@ -107,3 +107,18 @@ class SumStatRecord:
                           "  odds ratio   : " + str(self.oddsr),
                           "  EAF          : " + str(self.eaf)
                           ])
+
+def safe_float(value):
+    ''' Convert to float, rounding to sys.float_info.max if reach 64bit
+        precision limit. Only to be used on values > 0.
+    Args:
+        value (float)
+    Returns:
+        float
+    '''
+    value = float(value)
+    if value == 0.0:
+        value = 1 / sys.float_info.max
+    elif value == float('Inf'):
+        value = sys.float_info.max
+    return value
