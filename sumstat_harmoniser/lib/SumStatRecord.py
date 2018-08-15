@@ -118,7 +118,7 @@ def safe_float(value):
     '''
     value = float(value)
     if value == 0.0:
-        value = 1 / sys.float_info.max
+        value = sys.float_info.min
     elif value == float('Inf'):
         value = sys.float_info.max
     return value
