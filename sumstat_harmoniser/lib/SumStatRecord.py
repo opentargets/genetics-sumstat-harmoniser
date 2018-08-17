@@ -1,4 +1,5 @@
 from lib.Seq import Seq
+import sys
 
 class SumStatRecord:
     """ Class to hold a summary statistic record.
