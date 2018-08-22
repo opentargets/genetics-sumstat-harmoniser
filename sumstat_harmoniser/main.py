@@ -275,11 +275,11 @@ def parse_args():
     other_group.add_argument('--only_chrom', metavar="<str>",
                         help=('Only process this chromosome'), type=str)
     other_group.add_argument('--in_sep', metavar="<str>",
-                        help=('Input file column separator (default: tab)'),
-                        type=str, default="\t")
+                        help=('Input file column separator [tab|space|comma|other] (default: tab)'),
+                        type=str, default='tab')
     other_group.add_argument('--out_sep', metavar="<str>",
-                        help=('Output file column separator (default: tab)'),
-                        type=str, default="\t")
+                        help=('Output file column separator [tab|space|comma|other] (default: tab)'),
+                        type=str, default='tab')
     other_group.add_argument('--na_rep_in', metavar="<str>",
                         help=('How NA  are represented in the input file (default: "")'),
                         type=str, default="")
@@ -292,6 +292,10 @@ def parse_args():
 
     # Parse arguments
     args = parser.parse_args()
+
+    # Convert input/output separators
+    args.in_sep = convert_arg_separator(args.in_sep)
+    args.out_sep = convert_arg_separator(args.out_sep)
 
     # Assert that at least one of --hm_sumstats, --strand_counts is selected
     assert any([args.hm_sumstats, args.strand_counts]), \
@@ -327,6 +331,18 @@ def parse_args():
             'Error: --chrom_map must be in the format `--chrom_map 23=X 24=Y`'
 
     return args
+
+def convert_arg_separator(s):
+    ''' Converts [tab|space|comma|other] to a variable
+    '''
+    if s == 'tab':
+        return '\t'
+    elif s == 'space':
+        return ' '
+    elif s == 'comma':
+        return ','
+    else:
+        return s
 
 def exract_matching_record_from_vcf_records(ss_rec, vcf_recs):
     ''' Extracts the vcf record that matches the summary stat record.
