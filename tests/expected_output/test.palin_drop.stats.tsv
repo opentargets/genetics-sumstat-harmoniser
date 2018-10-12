@@ -1,6 +1,6 @@
 hm_code	count	description
 9	7	Palindromic; Drop palindromic; Will not harmonise
-10	3	Forward strand; Correct orientation; Already harmonised
+10	4	Forward strand; Correct orientation; Already harmonised
 11	2	Forward strand; Flipped orientation; Requires harmonisation
 12	2	Reverse strand; Correct orientation; Already harmonised
 13	2	Reverse strand; Flipped orientation; Requires harmonisation

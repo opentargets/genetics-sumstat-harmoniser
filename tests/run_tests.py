@@ -39,6 +39,8 @@ def main():
            '--chrom_col chrom '
            '--pos_col pos '
            '--effAl_col effect_allele '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--otherAl_col other_allele').format(
             script=hm_script,
             in_sumstats=in_test_sumstats,
@@ -73,12 +75,15 @@ def main():
            '--or_col_upper OR_upperCI '
            '--infer_maf_threshold 0.42 '
            '--af_vcf_field AF_NFE '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--palin_mode infer').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
            in_vcf=in_test_vcf,
            out_harm=out_infer_harm,
            out_stats=out_infer_stats)
+    # print(cmd)
     sp.call(cmd, shell=True, stdout=stdout_h)
     if check_output:
         if ((md5(out_infer_harm) == md5(expected_infer_harm)) and
@@ -106,6 +111,8 @@ def main():
            '--or_col OR '
            '--or_col_lower OR_lowerCI '
            '--or_col_upper OR_upperCI '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--palin_mode forward').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -139,6 +146,8 @@ def main():
            '--or_col OR '
            '--or_col_lower OR_lowerCI '
            '--or_col_upper OR_upperCI '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--palin_mode reverse').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -172,6 +181,8 @@ def main():
            '--or_col OR '
            '--or_col_lower OR_lowerCI '
            '--or_col_upper OR_upperCI '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--palin_mode drop').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -188,10 +199,10 @@ def main():
             print('Testing --palin_mode drop: FAIL')
 
     # Test harmonise using `--chrom_map 23=X` with `--palin_mode infer` on test data
-    out_map_harm = os.path.join(outdir, 'test.map.harmonised.tsv')
-    out_map_stats = os.path.join(outdir, 'test.map.stats.tsv')
-    expected_map_harm = 'expected_output/test.map.harmonised.tsv'
-    expected_map_stats = 'expected_output/test.map.stats.tsv'
+    out_map_harm = os.path.join(outdir, 'test.chrom_map.harmonised.tsv')
+    out_map_stats = os.path.join(outdir, 'test.chrom_map.stats.tsv')
+    expected_map_harm = 'expected_output/test.chrom_map.harmonised.tsv'
+    expected_map_stats = 'expected_output/test.chrom_map.stats.tsv'
     cmd = ('{script} '
            ' --sumstats {in_sumstats} '
            '--vcf {in_vcf}.gz '
@@ -209,6 +220,8 @@ def main():
            '--infer_maf_threshold 0.42 '
            '--af_vcf_field AF_NFE '
            '--chrom_map 23=X '
+           '--na_rep_in NA '
+           '--na_rep_out NA '
            '--palin_mode infer').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,

@@ -1,4 +1,5 @@
 from lib.Seq import Seq
+import sys
 
 class SumStatRecord:
     """ Class to hold a summary statistic record.
@@ -13,9 +14,9 @@ class SumStatRecord:
         self.effect_al = effect_al
         self.data = data
         self.beta = float(beta) if beta else None
-        self.oddsr = float(oddsr) if oddsr else None
-        self.oddsr_lower = float(oddsr_lower) if oddsr_lower else None
-        self.oddsr_upper = float(oddsr_upper) if oddsr_upper else None
+        self.oddsr = safe_float(oddsr) if oddsr else None
+        self.oddsr_lower = safe_float(oddsr_lower) if oddsr_lower else None
+        self.oddsr_upper = safe_float(oddsr_upper) if oddsr_upper else None
 
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:
@@ -45,7 +46,7 @@ class SumStatRecord:
         self.effect_al = Seq(self.effect_al)
         try:
             self.pos = int(self.pos)
-        except ValueError:
+        except (ValueError, TypeError) as e:
             return 14
 
         # Assert that other and effect alleles are different
@@ -76,10 +77,11 @@ class SumStatRecord:
         # Flip OR
         if self.oddsr:
             self.oddsr = self.oddsr ** -1
-        if self.oddsr_lower:
-            self.oddsr_lower = self.oddsr_lower ** -1
-        if self.oddsr_upper:
-            self.oddsr_upper = self.oddsr_upper ** -1
+        if self.oddsr_lower and self.oddsr_upper:
+            unharmonised_lower = self.oddsr_lower
+            unharmonised_upper = self.oddsr_upper
+            self.oddsr_lower = unharmonised_upper ** -1
+            self.oddsr_upper = unharmonised_lower ** -1
         # Switch alleles
         new_effect = self.other_al
         new_other = self.effect_al
@@ -106,3 +108,18 @@ class SumStatRecord:
                           "  odds ratio   : " + str(self.oddsr),
                           "  EAF          : " + str(self.eaf)
                           ])
+
+def safe_float(value):
+    ''' Convert to float, rounding to sys.float_info.max if reach 64bit
+        precision limit. Only to be used on values > 0.
+    Args:
+        value (float)
+    Returns:
+        float
+    '''
+    value = float(value)
+    if value == 0.0:
+        value = sys.float_info.min
+    elif value == float('Inf'):
+        value = sys.float_info.max
+    return value

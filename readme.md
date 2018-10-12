@@ -36,7 +36,8 @@ usage: main.py [-h] --sumstats <file> --vcf <file> [--hm_sumstats <file>]
                --otherAl_col <str> [--beta_col <str>] [--or_col <str>]
                [--or_col_lower <str>] [--or_col_upper <str>] [--eaf_col <str>]
                [--only_chrom <str>] [--in_sep <str>] [--out_sep <str>]
-               [--na_rep <str>] [--chrom_map <str> [<str> ...]]
+               [--na_rep_in <str>] [--na_rep_out <str>]
+               [--chrom_map <str> [<str> ...]]
 
 Summary statistc harmoniser
 
@@ -87,7 +88,8 @@ Other args:
   --only_chrom <str>    Only process this chromosome
   --in_sep <str>        Input file column separator (default: tab)
   --out_sep <str>       Output file column separator (default: tab)
-  --na_rep <str>        How to represent NA values in output (default: "")
+  --na_rep_in <str>     How NA are represented in the input file (default: "")
+  --na_rep_out <str>    How to represent NA values in output (default: "")
   --chrom_map <str> [<str> ...]
                         Map summary stat chromosome names, e.g. `--chrom_map
                         23=X 24=Y`
@@ -143,26 +145,7 @@ bin/sumstat_harmoniser \
 
 #### Todo
 
-- (✓) Add option to assume forward/reverse strand/inder/drop palindromic.
-- (✓) Keep all variants in the output:
-  - (✓) Add encoding of what was done to each variant
-  - (✓) Add condition on code == None
-  - (✓) Remove all `continue` statements
-  - (✓) Get hamronised rsid from vcf
-- (✓) Remove infer_strand
-- (✓) Add option to use odds ratio (OR), rather than betas
-  - (✓) Remove requirement for beta
-  - (✓) Add option for OR and integrate with SumStat class
-  - (✓) Assert that either beta or OR is provided
-- (✓) Remove requirement for allele frequency
-- (✓) Remove allele frequency filter
-- (✓) Add preliminary check of forward/reverse stats
-- (✓) Finalise output format
-- (✓) Tests
-  - (✓) Automate test output check
-  - (✓) Add test for different parameters
-  - (✓) Test preliminary run through
-- (✓) Add ability to map chromosome names eg. `--chrom_map 23=X 24=Y`
+- ( ) Check that tbi file exists for the VCF
 - ( ) Find way to speed up reference VCF query (currently using tabix which takes up 85% of run time). Possibilities:
   - ( ) [Giggle](https://github.com/ryanlayer/giggle) is reported to be faster than tabix, but I don't know if this is only for multiple querys.
   - ( ) Load required lines from reference VCF into memory
