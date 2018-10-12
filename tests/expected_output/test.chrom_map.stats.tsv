@@ -3,7 +3,7 @@ hm_code	count	description
 2	1	Palindromic; Infer strand; Forward strand; Flipped orientation; Requires harmonisation
 3	1	Palindromic; Infer strand; Reverse strand; Correct orientation; Already harmonised
 4	1	Palindromic; Infer strand; Reverse strand; Flipped orientation; Requires harmonisation
-10	5	Forward strand; Correct orientation; Already harmonised
+10	6	Forward strand; Correct orientation; Already harmonised
 11	2	Forward strand; Flipped orientation; Requires harmonisation
 12	2	Reverse strand; Correct orientation; Already harmonised
 13	2	Reverse strand; Flipped orientation; Requires harmonisation

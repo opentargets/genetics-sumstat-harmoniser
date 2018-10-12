@@ -41,6 +41,7 @@ def main():
            '--effAl_col effect_allele '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--otherAl_col other_allele').format(
             script=hm_script,
             in_sumstats=in_test_sumstats,
@@ -77,6 +78,7 @@ def main():
            '--af_vcf_field AF_NFE '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--palin_mode infer').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -113,6 +115,7 @@ def main():
            '--or_col_upper OR_upperCI '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--palin_mode forward').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -148,6 +151,7 @@ def main():
            '--or_col_upper OR_upperCI '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--palin_mode reverse').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -183,6 +187,7 @@ def main():
            '--or_col_upper OR_upperCI '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--palin_mode drop').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,
@@ -222,6 +227,7 @@ def main():
            '--chrom_map 23=X '
            '--na_rep_in NA '
            '--na_rep_out NA '
+           '--rsid_col rsID '
            '--palin_mode infer').format(
            script=hm_script,
            in_sumstats=in_test_sumstats,

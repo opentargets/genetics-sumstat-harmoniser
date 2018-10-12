@@ -25,3 +25,4 @@ NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	14	rs23	1	NA	G	A	0.3	1	1.1	1.08	1.13	Missing po
 1_1_G_A	rs1	1	1	G	A	NA	1.1	1.08	1.13	0.3	10	rs23	1	1	G	A	0.3	NA	1.1	1.08	1.13	Unambiguous - SNP - correct strand, same alleles but Beta is NA
 NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	NA	14	rs24	1	24	X	A	0.3	1	1.1	1.08	1.13	Invalid alleles, cannot harmonise
 X_22_G_A	rs22	X	22	G	A	1.0	1.1	1.08	1.13	0.3	10	rs22	23	22	G	A	0.3	1	1.1	1.08	1.13	Should be dropped unless `--chrom_map 23=X` is supplied
+1_25_AT_A	rs25	1	25	AT	A	1.0	1.1	1.08	1.13	0.3	10	rs25	1	25	AT	A	0.3	1	1.1	1.08	1.13	Unambiguous after rsid match - SNP - correct strand, same alleles = no change
