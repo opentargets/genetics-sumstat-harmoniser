@@ -5,7 +5,7 @@ class SumStatRecord:
     """ Class to hold a summary statistic record.
     """
     def __init__(self, chrom, pos, other_al, effect_al, beta, oddsr,
-                 oddsr_lower, oddsr_upper, eaf, data):
+                 oddsr_lower, oddsr_upper, eaf, rsid, data):
 
         # Set raw info
         self.chrom = chrom
@@ -17,6 +17,7 @@ class SumStatRecord:
         self.oddsr = safe_float(oddsr) if oddsr else None
         self.oddsr_lower = safe_float(oddsr_lower) if oddsr_lower else None
         self.oddsr_upper = safe_float(oddsr_upper) if oddsr_upper else None
+        self.rsid = rsid
 
         # Effect allele frequency is not required if we assume +ve strand
         if eaf:

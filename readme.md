@@ -1,7 +1,7 @@
 GWAS summary statistics harmoniser
 ==================================
 
-Scripts for harmonising GWAS summary stats against a reference VCF sitelist. See [flowchart](flowchart_v2.pdf) for implementation details.
+Scripts for harmonising GWAS summary stats against a reference VCF sitelist. See [flowchart](flowchart_v3.svg) for implementation details.
 
 #### Requirements
 
@@ -35,8 +35,8 @@ usage: main.py [-h] --sumstats <file> --vcf <file> [--hm_sumstats <file>]
                --chrom_col <str> --pos_col <str> --effAl_col <str>
                --otherAl_col <str> [--beta_col <str>] [--or_col <str>]
                [--or_col_lower <str>] [--or_col_upper <str>] [--eaf_col <str>]
-               [--only_chrom <str>] [--in_sep <str>] [--out_sep <str>]
-               [--na_rep_in <str>] [--na_rep_out <str>]
+               [--rsid_col <str>] [--only_chrom <str>] [--in_sep <str>]
+               [--out_sep <str>] [--na_rep_in <str>] [--na_rep_out <str>]
                [--chrom_map <str> [<str> ...]]
 
 Summary statistc harmoniser
@@ -83,6 +83,7 @@ Input column names:
   --or_col_lower <str>  Odds ratio lower CI column
   --or_col_upper <str>  Odds ratio upper CI column
   --eaf_col <str>       Effect allele frequency column
+  --rsid_col <str>      rsID column in the summary stat file
 
 Other args:
   --only_chrom <str>    Only process this chromosome

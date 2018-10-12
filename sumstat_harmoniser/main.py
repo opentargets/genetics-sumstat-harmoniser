@@ -269,6 +269,8 @@ def parse_args():
                         help=('Odds ratio upper CI column'), type=str)
     incols_group.add_argument('--eaf_col', metavar="<str>",
                         help=('Effect allele frequency column'), type=str)
+    incols_group.add_argument('--rsid_col', metavar="<str>",
+                        help=('rsID column in the summary stat file'), type=str)
 
     # Global other args
     other_group = parser.add_argument_group(title='Other args')
@@ -368,6 +370,10 @@ def exract_matching_record_from_vcf_records(ss_rec, vcf_recs):
 
     # Remove records that don't have any matching alt alleles
     vcf_recs = [vcf_rec for vcf_rec in vcf_recs if vcf_rec.n_alts() > 0]
+
+    # If there are multiple matching records, resolve using rsid
+    if len(vcf_recs) > 1:
+        vcf_recs = [vcf_rec for vcf_rec in vcf_recs if vcf_rec.id == ss_rec.rsid]
 
     # Discard ss_rec if there are no valid vcf_recs
     if len(vcf_recs) == 0:
@@ -652,6 +658,7 @@ def yield_sum_stat_records(inf, sep):
                                   row.get(args.or_col_lower, None),
                                   row.get(args.or_col_upper, None),
                                   row.get(args.eaf_col, None),
+                                  row.get(args.rsid_col, None),
                                   row)
         yield ss_record
 
